@@ -5,9 +5,13 @@ import plotly
 import analysis
 import plotly.graph_objects as go
 import sqlite3
+import os
+from datetime import datetime, date, time
 
 app = Flask(__name__)
 
+########################################################################
+# Functional stuff
 def get_db_connection():
     conn = sqlite3.connect('db/database.db')
     conn.row_factory = sqlite3.Row
@@ -18,7 +22,12 @@ def read_bol_df():
                          con=get_db_connection(),
                          index_col='Date')
     return bol_df
-    
+
+def get_today(): 
+    return date.today()
+
+######################################################################### 
+
 @app.route("/")
 def root():
     return redirect(url_for("home"))
@@ -27,10 +36,12 @@ def root():
 def home():
     bol_df = read_bol_df()
     home_df = pd.DataFrame(bol_df['ticker'].unique())
+    home_df.columns = ['Symbol']
     
     return render_template('home.html',
                            tables=[home_df.to_html(classes='data')], 
-                           titles=home_df.columns.values)
+                           values=home_df.columns.values,
+                           today=get_today())
 
 @app.route('/rebuild')
 def rebuild():
