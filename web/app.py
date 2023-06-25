@@ -19,6 +19,9 @@ def read_bol_df():
                          index_col='Date')
     return bol_df
     
+@app.route("/")
+def root():
+    return redirect(url_for("home"))
 
 @app.route("/home")
 def home():
