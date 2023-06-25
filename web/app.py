@@ -20,8 +20,17 @@ def read_bol_df():
     return bol_df
     
 
-@app.route("/")
+@app.route("/home")
 def home():
+    bol_df = read_bol_df()
+    home_df = pd.DataFrame(bol_df['ticker'].unique())
+    
+    return render_template('home.html',
+                           tables=[home_df.to_html(classes='data')], 
+                           titles=home_df.columns.values)
+
+@app.route('/rebuild')
+def rebuild():
     # Get list of gainer stocks
     df = analysis.get_biggest_gainers()
     
@@ -39,11 +48,7 @@ def home():
                   con=conn, 
                   if_exists='replace')
     
-    home_df = pd.DataFrame(bol_df['ticker'].unique())
-    
-    return render_template('home.html',
-                           tables=[home_df.to_html(classes='data')], 
-                           titles=home_df.columns.values)
+    return redirect(url_for('home'))
 
 
 @app.route("/showLineChart")
