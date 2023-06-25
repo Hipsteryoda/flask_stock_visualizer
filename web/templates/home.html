@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+<head>
+        <title>Home</title>
+</head>
+<body>
+    <h1>Home Page</h1>
+    <a href="{{url_for('data')}}" >See Data</a>
+    <a href="{{url_for('showLineChart')}}">See Chart</a>
+    <div class="container">
+        {% for table in tables %}
+            {{titles[loop.index]}}
+            {{ table|safe }}
+        {% endfor %}
+      </div>
+      {% block scripts %}{% endblock %}
+</body>

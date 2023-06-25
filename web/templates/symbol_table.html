@@ -1,0 +1,24 @@
+{% extends "home.html" %}
+
+{% block content %}
+  <table id="data" class="table table-striped">
+    <thead>
+      <tr>
+        <th>{{ df.columns[0] }}</th>
+        <th>Age</th>
+        <th>Address</th>
+        <th>Phone Number</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>name</td>
+            <td>age</td>
+            <td>address</td>
+            <td>phone number</td>
+            <td>email</td>
+        </tr>
+    </tbody>
+  </table>
+{% endblock %}
