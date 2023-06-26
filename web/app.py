@@ -23,6 +23,11 @@ def read_bol_df():
                          index_col='Date')
     return bol_df
 
+def read_today_results_df():
+    return pd.read_sql('SELECT * FROM today_results',
+                       con=get_db_connection(),
+                       index_col='Symbol')
+
 def get_today(): 
     return date.today()
 
@@ -34,13 +39,15 @@ def root():
 
 @app.route("/home")
 def home():
-    bol_df = read_bol_df()
-    home_df = pd.DataFrame(bol_df['ticker'].unique())
-    home_df.columns = ['Symbol']
+    # bol_df = read_bol_df()
+    # home_df = pd.DataFrame(bol_df['ticker'].unique())
+    # home_df.columns = ['Symbol']
+    
+    today_results_df = read_today_results_df()
     
     return render_template('home.html',
-                           tables=[home_df.to_html(classes='data')], 
-                           values=home_df.columns.values,
+                           tables=[today_results_df.to_html(classes='data')], 
+                           values=today_results_df.columns.values,
                            today=get_today())
 
 @app.route('/rebuild')
@@ -61,6 +68,11 @@ def rebuild():
     bol_df.to_sql('bol_df', 
                   con=conn, 
                   if_exists='replace')
+    
+    today_results_df = analysis.trend_slope(df, bol_df, 'Symbol')
+    today_results_df.to_sql('today_results',
+                            con=conn,
+                            if_exists='replace')
     
     return redirect(url_for('home'))
 

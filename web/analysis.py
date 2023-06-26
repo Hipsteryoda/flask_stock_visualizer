@@ -48,15 +48,15 @@ def get_trend_slope(df, symbol):
     a, b = np.polyfit(x, y, 1)
     return a
 
-def find_positive_trends(df):
+def find_positive_trends(df, bol_df):
     for symbol in df['ticker'].unique():
-        a = get_trend_slope(symbol)
+        a = get_trend_slope(bol_df, symbol)
         if a > 0:
             print(f'{symbol} a greater than 0: {a}')
             
-def trend_slope(df, symbol_col):
+def trend_slope(df, bol_df, symbol_col):
     for symbol in df[symbol_col].unique():
-        a = get_trend_slope(symbol)
+        a = get_trend_slope(bol_df, symbol)
         idx = df[df[symbol_col] == symbol].index
         df.loc[idx, 'trend_slope'] = a
     return df
