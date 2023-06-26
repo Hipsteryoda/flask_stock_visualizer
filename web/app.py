@@ -46,7 +46,7 @@ def home():
     today_results_df = read_today_results_df()
     
     return render_template('home.html',
-                           tables=[today_results_df.to_html(classes='data')], 
+                           tables=[today_results_df.sort_values(['trend_slope'], ascending=False).to_html(classes='data')], 
                            values=today_results_df.columns.values,
                            today=get_today())
 
