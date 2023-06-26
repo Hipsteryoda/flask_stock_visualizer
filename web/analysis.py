@@ -54,6 +54,13 @@ def find_positive_trends(df):
         if a > 0:
             print(f'{symbol} a greater than 0: {a}')
             
+def trend_slope(df, symbol_col):
+    for symbol in df[symbol_col].unique():
+        a = get_trend_slope(symbol)
+        idx = df[df[symbol_col] == symbol].index
+        df.loc[idx, 'trend_slope'] = a
+    return df
+            
 def n_day_moving_average(df, rolling_window):
     """
     Calculates and creates twenty day moving average values into the dataframe
