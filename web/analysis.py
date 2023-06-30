@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 import plotly.express as px
+import plotly.io as pio
+pio.renderers.default = "browser"
 
 def get_biggest_gainers() -> pd.DataFrame:
     r = requests.get('https://www.dogsofthedow.com/biggest-stock-gainers-today.htm')
@@ -49,6 +51,9 @@ def get_trend_slope(df, symbol):
     return a
 
 def find_positive_trends(df, bol_df):
+    """
+    returns the symbols with positive trend slopes over the history of the data
+    """
     for symbol in df['ticker'].unique():
         a = get_trend_slope(bol_df, symbol)
         if a > 0:
