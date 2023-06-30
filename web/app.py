@@ -96,6 +96,6 @@ def showLineChart(symbol):
 def data():
     conn = get_db_connection()
     bol_df = read_bol_df()
-    return render_template('simple.html',  
+    return render_template('dataset.html',  
                            tables=[bol_df.to_html(classes='data')], 
                            titles=bol_df.columns.values)
