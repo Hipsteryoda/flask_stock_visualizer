@@ -79,14 +79,16 @@ def rebuild():
 
 @app.route("/showLineChart/<symbol>")
 def showLineChart(symbol):
+    # connect to and read the db table
     conn = get_db_connection()
-    
-    # make a graph
     bol_df = read_bol_df()
+
+    # create the plot object (trace)
     trace = analysis.plotly_plot_bolinger(bol_df, symbol, 20)
-    data = [trace]
-    graphJSON = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
-    print(graphJSON)
+    
+    # encode the plot object into json
+    graphJSON = json.dumps(trace, cls=plotly.utils.PlotlyJSONEncoder)
+    
     return render_template('index.html',
                            graphJSON=graphJSON)
     

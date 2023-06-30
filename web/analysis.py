@@ -131,4 +131,4 @@ def plotly_plot_bolinger(df, symbol, window):
         go.Scatter(x=x_axis, y=df[df['ticker']==symbol][f'bolinger_lower_band'], 
                     name='Lower Band')
     )
-    return fig.show()
+    return fig
