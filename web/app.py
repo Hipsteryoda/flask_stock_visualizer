@@ -24,9 +24,10 @@ def read_bol_df():
     return bol_df
 
 def read_today_results_df():
-    return pd.read_sql('SELECT * FROM today_results',
-                       con=get_db_connection(),
-                       index_col='Symbol')
+    df = pd.read_sql('SELECT * FROM today_results',
+                       con=get_db_connection())
+    df.loc[:,'Symbol':]
+    return df 
 
 def get_today(): 
     return date.today()
@@ -44,11 +45,22 @@ def home():
     # home_df.columns = ['Symbol']
     
     today_results_df = read_today_results_df()
+    link_frmt = lambda x: f'<a href="showLineChart/{x}">{x}</a>'
     
     return render_template('home.html',
-                           tables=[today_results_df.sort_values(['trend_slope'], ascending=False).to_html(classes='data')], 
+                           tables=[
+                               today_results_df
+                               .sort_values(
+                                   ['trend_slope'], 
+                                   ascending=False)
+                               .to_html(classes='data',
+                                        formatters={'Symbol':link_frmt},
+                                        escape=False,
+                                        index=False)
+                               ], 
                            values=today_results_df.columns.values,
-                           today=get_today())
+                           today=get_today()
+                           )
 
 @app.route('/rebuild')
 def rebuild():
