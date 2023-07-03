@@ -132,3 +132,76 @@ def plotly_plot_bolinger(df, symbol, window):
                     name='Lower Band')
     )
     return fig
+
+######################### News Article Analysis ###############################
+import nltk
+from nltk import sent_tokenize, word_tokenize
+from nltk.corpus import stopwords
+ 
+# Dict subclass for counting hashable items. Sometimes called a bag or multiset. Elements are stored as dictionary keys and their counts are stored as dictionary values.
+from collections import Counter
+
+import re
+        
+def is_ok(token):
+    stop = set(stopwords.words('english'))
+    return re.match('^[a-z]+$', token) and token not in stop
+
+def tokenize(sent):
+    return [word for word in word_tokenize(sent) if is_ok(word)]
+
+class News():
+    def __init__(self, ticker):
+        self.ticker = yf.Ticker(ticker)
+        
+    # scrape URL Links from news
+    def get_urls(self):
+        urls = [self.ticker.news[count]['link'] for count, value in enumerate(self.ticker.news)]
+        return urls
+
+    def get_titles(self):
+        titles = [self.ticker.news[count]['title'] for count, value in enumerate(self.ticker.news)]
+        return titles
+
+    def get_publishers(self):
+        publishers = [self.ticker.news[count]['publisher'] for count, value in enumerate(self.ticker.news)]
+        return publishers
+
+    def get_publish_times(self):
+        publish_times = [self.ticker.news[count]['providerPublishTime'] for count, value in enumerate(self.ticker.news)]
+        return publish_times
+
+    def get_types(self):
+        article_types = [self.ticker.news[count]['type'] for count, value in enumerate(self.ticker.news)]
+        return article_types
+
+class Article:
+    def __init__(symbol):
+       # get the articles
+       return ''
+
+    def summarize(text, n=5):
+        # Tokenize the sentence
+        sents = sent_tokenize(text)
+        # Get a "bill of words" or all words in all sentences that is_ok() 
+        bow = [tokenize(sent) for sent in sents]
+        # create a counter object to be used to count the words
+        tf = Counter()
+
+        # Iterate through the sentences in the bow
+        for sent in bow:
+            tf.update(sent)
+
+        def score(i):
+            return sum(tf[word] for word in bow[i])
+
+        idx = sorted(range(len(bow)), key=score, reverse=True)[:n]
+        summary_list = [sents[i] for i in idx]
+        summary_text = ' '.join(summary_list)
+        fail = 'Our engineers are working quickly to resolve the issue.'
+        if summary_text != fail:
+            return summary_text
+
+
+
+

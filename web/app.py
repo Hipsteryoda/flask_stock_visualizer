@@ -32,6 +32,12 @@ def read_today_results_df():
 def get_today(): 
     return date.today()
 
+
+def get_summarized_articles():
+    
+    return ''
+
+
 ######################################################################### 
 
 @app.route("/")
@@ -101,8 +107,18 @@ def showLineChart(symbol):
     # encode the plot object into json
     graphJSON = json.dumps(trace, cls=plotly.utils.PlotlyJSONEncoder)
     
+    articles = analysis.News(symbol)
+    titles = articles.get_titles()
+    urls = articles.get_urls()
+    link_dict = {}
+    for idx, val in enumerate(titles):
+        link_dict[titles[idx]] = urls[idx]
+    
+    
     return render_template('index.html',
-                           graphJSON=graphJSON)
+                           graphJSON=graphJSON,
+                           symbol=symbol,
+                           link_dict=link_dict)
     
 @app.route('/data')
 def data():
@@ -111,3 +127,4 @@ def data():
     return render_template('dataset.html',  
                            tables=[bol_df.to_html(classes='data')], 
                            titles=bol_df.columns.values)
+
