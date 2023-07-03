@@ -115,7 +115,7 @@ def showLineChart(symbol):
         link_dict[titles[idx]] = urls[idx]
     
     
-    return render_template('index.html',
+    return render_template('stock_page.html',
                            graphJSON=graphJSON,
                            symbol=symbol,
                            link_dict=link_dict)
