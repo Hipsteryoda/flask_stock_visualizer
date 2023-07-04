@@ -67,6 +67,10 @@ WHERE datetime IN (SELECT max(datetime) FROM symbol_param_optimized WHERE symbol
     )
     return facts_table
     
+def refresh_opts(symbol):
+    period = '12mo'
+    post_optimization_params(symbol, period)
+    
 
 ######################################################################### 
 
@@ -124,6 +128,10 @@ def rebuild():
     
     return redirect(url_for('home'))
 
+@app.route("/optimization_refresh/<symbol>")
+def optimization_refresh(symbol):
+    refresh_opts(symbol)
+    return redirect('/showLineChart/' + symbol)
 
 @app.route("/showLineChart/<symbol>")
 def showLineChart(symbol):
@@ -156,6 +164,7 @@ def showLineChart(symbol):
                            graphJSON=graphJSON,
                            symbol=symbol,
                            link_dict=link_dict,
+                           refresh_opts=redirect('/optimization_refresh/' + symbol),
                            facts_table=facts_table.to_html(
                                index=False,
                                classes='center'
