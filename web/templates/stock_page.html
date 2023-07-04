@@ -71,10 +71,15 @@
     <ul>
     {% for title, url in link_dict.items() %}
       <li>
-        <a href={{ url }}>
+        <a href={{ url[0] }}>
           {{ title }}
         </a>
-      </li>
+        <ul>
+          <li>
+            {{ url[1] }}
+          </li>
+        </ul
+        </li>
       <br>
     {% endfor %}
     </ul>

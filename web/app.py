@@ -107,13 +107,12 @@ def showLineChart(symbol):
     # encode the plot object into json
     graphJSON = json.dumps(trace, cls=plotly.utils.PlotlyJSONEncoder)
     
-    articles = analysis.News(symbol)
-    titles = articles.get_titles()
-    urls = articles.get_urls()
+    news = analysis.News(symbol)
+    titles = news.get_titles()
+    urls = news.get_urls()
     link_dict = {}
     for idx, val in enumerate(titles):
-        link_dict[titles[idx]] = urls[idx]
-    
+        link_dict[titles[idx]] = [urls[idx], analysis.Article(urls[idx]).polarity_scores()]
     
     return render_template('stock_page.html',
                            graphJSON=graphJSON,

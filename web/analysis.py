@@ -12,6 +12,16 @@ import plotly.express as px
 import plotly.io as pio
 pio.renderers.default = "browser"
 
+# NLP stuff
+# import sklearn
+import nltk, re
+from nltk.tokenize import word_tokenize, sent_tokenize
+from nltk.corpus import stopwords
+from nltk.sentiment import SentimentIntensityAnalyzer
+from collections import Counter
+
+from bs4 import BeautifulSoup
+
 def get_biggest_gainers() -> pd.DataFrame:
     r = requests.get('https://www.dogsofthedow.com/biggest-stock-gainers-today.htm')
     gainers_df = pd.read_html(r.text)[0]
@@ -176,13 +186,25 @@ class News():
         return article_types
 
 class Article:
-    def __init__(symbol):
+    def __init__(self, url):
        # get the articles
-       return ''
+       self.contents = self.get_article_contents(url)
+       
+    def get_article_contents(self, url):
+        """Gets the full text of a given Yahoo Finance article given by the url"""
+        r = requests.get(url).text
+        soup = BeautifulSoup(r, 'html.parser')
+
+        p = soup.find_all('p')
+
+        p_list = [text.get_text() for text in p]
+        full_text = ' '.join(p_list)
+
+        return full_text
 
     def summarize(text, n=5):
         # Tokenize the sentence
-        sents = sent_tokenize(text)
+        sents = sent_tokenize(text.contents)
         # Get a "bill of words" or all words in all sentences that is_ok() 
         bow = [tokenize(sent) for sent in sents]
         # create a counter object to be used to count the words
@@ -201,6 +223,13 @@ class Article:
         fail = 'Our engineers are working quickly to resolve the issue.'
         if summary_text != fail:
             return summary_text
+        
+    def polarity_scores(self):
+        if self.contents != 'Thank you for your patience. Our engineers are working quickly to resolve the issue.':
+            self.polarity_score = SentimentIntensityAnalyzer().polarity_scores(self.contents)
+            return self.polarity_score
+        else:
+            return 'No article contents found.'
 
 
 
