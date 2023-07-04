@@ -15,6 +15,7 @@ class Single_Parameter_Optimizer:
         self.opts = self.optimize_window()
         self.optimum_window = self.opts[0]
         self.optimum_multiple = self.opts[1]
+        self.organic_growth = (df.Close.pct_change()+1).prod()
 
     # Moving Average calculation
     def ma_calc(self, n):

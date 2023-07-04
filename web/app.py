@@ -53,6 +53,7 @@ def home():
     
     today_results_df = read_today_results_df()
     link_frmt = lambda x: f'<a href="showLineChart/{x}">{x}</a>'
+    hdr_frmt = f'<th onclick="something"></th>'
     
     return render_template('home.html',
                            tables=[
@@ -120,7 +121,8 @@ def showLineChart(symbol):
     period = '12mo'
     single_opts = Single_Parameter_Optimizer(analysis.get_history(symbol, period))
     facts_table = pd.DataFrame({'Optimum Window':single_opts.optimum_window,
-                                'Optimum Multiple at Window':single_opts.optimum_multiple},
+                                'Optimum Multiple at Window':single_opts.optimum_multiple,
+                                'Natural Growth':single_opts.organic_growth},
                                index=[0])
     
     return render_template('stock_page.html',
