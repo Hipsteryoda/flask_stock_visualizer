@@ -17,6 +17,11 @@
         margin-bottom: 40px;
         font-size: 0.9em;
       }
+
+      table.center {
+        margin-left: auto; 
+        margin-right: auto;
+      }
   
       .male th {
           background-color: #add8e6;
@@ -83,6 +88,9 @@
       <br>
     {% endfor %}
     </ul>
+  </div>
+  <div>
+    {{ facts_table | safe }}
   </div>
   <div id='chart' class='chart'”>
 

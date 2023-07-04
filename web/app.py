@@ -7,6 +7,7 @@ import plotly.graph_objects as go
 import sqlite3
 import os
 from datetime import datetime, date, time
+from mv_avg_window_optimizer import Single_Parameter_Optimizer, Multiple_Parameter_Optimizer
 
 app = Flask(__name__)
 
@@ -107,17 +108,29 @@ def showLineChart(symbol):
     # encode the plot object into json
     graphJSON = json.dumps(trace, cls=plotly.utils.PlotlyJSONEncoder)
     
+    # Stock article stuff
     news = analysis.News(symbol)
     titles = news.get_titles()
     urls = news.get_urls()
     link_dict = {}
     for idx, val in enumerate(titles):
         link_dict[titles[idx]] = [urls[idx], analysis.Article(urls[idx]).polarity_scores()]
+        
+    # Facts table
+    period = '12mo'
+    single_opts = Single_Parameter_Optimizer(analysis.get_history(symbol, period))
+    facts_table = pd.DataFrame({'Optimum Window':single_opts.optimum_window,
+                                'Optimum Multiple at Window':single_opts.optimum_multiple},
+                               index=[0])
     
     return render_template('stock_page.html',
                            graphJSON=graphJSON,
                            symbol=symbol,
-                           link_dict=link_dict)
+                           link_dict=link_dict,
+                           facts_table=facts_table.to_html(
+                               index=False,
+                               classes='center'
+                           ))
     
 @app.route('/data')
 def data():
