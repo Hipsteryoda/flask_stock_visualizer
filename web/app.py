@@ -56,6 +56,17 @@ def post_optimization_params(symbol, period):
                        if_exists='append',
                        index=False)
 
+def read_optimization_params(symbol):
+    # retrieve latest info from db for parameter optimization
+    query = f'''SELECT * FROM symbol_param_optimized
+WHERE datetime IN (SELECT max(datetime) FROM symbol_param_optimized WHERE symbol = '{symbol}');'''
+    conn = get_db_connection()
+    facts_table = pd.read_sql_query(
+        sql=query,
+        con=conn
+    )
+    return facts_table
+    
 
 ######################################################################### 
 
@@ -119,14 +130,13 @@ def showLineChart(symbol):
     # connect to and read the db table
     conn = get_db_connection()
     bol_df = read_bol_df()
-    
-    # retrieve latest info from db for parameter optimization
-    query = '''SELECT * FROM symbol_param_optimized
-    WHERE datetime in (SELECT MAX(datetime) FROM symbol_param_optimized)'''
-    facts_table = pd.read_sql_query(
-        sql=query,
-        con=conn
-    )
+    facts_table = read_optimization_params(symbol)
+    period = '12mo'
+    if facts_table.shape[0] == 0:
+        # get and post params
+        post_optimization_params(symbol, period)
+        facts_table = read_optimization_params(symbol)
+
 
     # Stock article stuff
     news = analysis.News(symbol)
@@ -135,15 +145,7 @@ def showLineChart(symbol):
     link_dict = {}
     for idx, val in enumerate(titles):
         link_dict[titles[idx]] = [urls[idx], analysis.Article(urls[idx]).polarity_scores()]
-
-    # Facts table
-    period = '12mo'
     
-    # write optimized parameters to db
-    post_optimization_params(symbol, period)
-    
-
-
     # create the plot object (trace)
     trace = analysis.plotly_plot_bolinger(bol_df, symbol, facts_table.opt_single_ma_window)
     
