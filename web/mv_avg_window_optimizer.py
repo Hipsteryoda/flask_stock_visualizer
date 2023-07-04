@@ -71,6 +71,7 @@ class Multiple_Parameter_Optimizer:
         self.optimum_window_1 = self.opts[0][0]
         self.optimum_window_2 = self.opts[0][1]
         self.optimum_multiple = self.opts[1]
+        self.organic_growth = (df.Close.pct_change()+1).prod()
 
     def two_ma_calc(self, n, m):
         self.df['sma_1'] = self.df.Close.rolling(n).mean()

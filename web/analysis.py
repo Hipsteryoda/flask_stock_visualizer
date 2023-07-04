@@ -92,7 +92,7 @@ def n_day_moving_average(df, rolling_window):
         twenty_day_rolling = rolling.mean()
         
         # set twenty day rolling average at proper indexes for given symbol
-        df.loc[idx_ref_min:idx_ref_max+1,f'{rolling_window}_day_moving_average'] = twenty_day_rolling
+        df.loc[idx_ref_min:idx_ref_max+1,f'optimum_day_moving_average'] = twenty_day_rolling
         
     df.set_index('Date', inplace=True)
     return df
@@ -130,7 +130,7 @@ def plotly_plot_bolinger(df, symbol, window):
         layout={'title':f'{symbol}'}
         )
     fig.add_trace(
-        go.Scatter(x=x_axis, y=df[df['ticker']==symbol][f'{window}_day_moving_average'], 
+        go.Scatter(x=x_axis, y=df[df['ticker']==symbol][f'optimum_day_moving_average'], 
                     name='Moving Average')
         )
     fig.add_trace(

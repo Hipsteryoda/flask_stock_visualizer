@@ -39,6 +39,24 @@ def get_summarized_articles():
     return ''
 
 
+def post_optimization_params(symbol, period):
+        single_opts = Single_Parameter_Optimizer(analysis.get_history(symbol, period))
+        two_opts = Multiple_Parameter_Optimizer(analysis.get_history(symbol, period))
+        payload = pd.DataFrame({'symbol':symbol,
+                                'datetime':datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f"),
+                                'opt_single_ma_window':single_opts.optimum_window,
+                                'opt_single_multiple':single_opts.optimum_multiple,
+                                'opt_two_ma_window_1':two_opts.optimum_window_1,
+                                'opt_two_ma_window_2':two_opts.optimum_window_2,
+                                'opt_two_multiple':two_opts.optimum_multiple,
+                                'organic_growth':single_opts.organic_growth},
+                               index=[0])
+        payload.to_sql('symbol_param_optimized',
+                       con=get_db_connection(),
+                       if_exists='append',
+                       index=False)
+
+
 ######################################################################### 
 
 @app.route("/")
@@ -61,8 +79,7 @@ def home():
                                .sort_values(
                                    ['trend_slope'], 
                                    ascending=False)
-                               .to_html(classes='data',
-                                        formatters={'Symbol':link_frmt},
+                               .to_html(formatters={'Symbol':link_frmt},
                                         escape=False,
                                         index=False)
                                ], 
@@ -81,7 +98,7 @@ def rebuild():
     # Get moving average and bolinger bands
     ma_df = analysis.n_day_moving_average(built_df, 20)
     bol_df = analysis.bolinger_bands(ma_df, 
-                                     '20_day_moving_average', 
+                                     'optimum_day_moving_average', 
                                      20)
 
     conn = get_db_connection()
@@ -102,13 +119,15 @@ def showLineChart(symbol):
     # connect to and read the db table
     conn = get_db_connection()
     bol_df = read_bol_df()
+    
+    # retrieve latest info from db for parameter optimization
+    query = '''SELECT * FROM symbol_param_optimized
+    WHERE datetime in (SELECT MAX(datetime) FROM symbol_param_optimized)'''
+    facts_table = pd.read_sql_query(
+        sql=query,
+        con=conn
+    )
 
-    # create the plot object (trace)
-    trace = analysis.plotly_plot_bolinger(bol_df, symbol, 20)
-    
-    # encode the plot object into json
-    graphJSON = json.dumps(trace, cls=plotly.utils.PlotlyJSONEncoder)
-    
     # Stock article stuff
     news = analysis.News(symbol)
     titles = news.get_titles()
@@ -116,14 +135,20 @@ def showLineChart(symbol):
     link_dict = {}
     for idx, val in enumerate(titles):
         link_dict[titles[idx]] = [urls[idx], analysis.Article(urls[idx]).polarity_scores()]
-        
+
     # Facts table
     period = '12mo'
-    single_opts = Single_Parameter_Optimizer(analysis.get_history(symbol, period))
-    facts_table = pd.DataFrame({'Optimum Window':single_opts.optimum_window,
-                                'Optimum Multiple at Window':single_opts.optimum_multiple,
-                                'Natural Growth':single_opts.organic_growth},
-                               index=[0])
+    
+    # write optimized parameters to db
+    post_optimization_params(symbol, period)
+    
+
+
+    # create the plot object (trace)
+    trace = analysis.plotly_plot_bolinger(bol_df, symbol, facts_table.opt_single_ma_window)
+    
+    # encode the plot object into json
+    graphJSON = json.dumps(trace, cls=plotly.utils.PlotlyJSONEncoder)
     
     return render_template('stock_page.html',
                            graphJSON=graphJSON,
