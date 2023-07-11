@@ -132,7 +132,7 @@ def rebuild():
 def optimization_refresh(symbol):
     post_optimization_params(symbol, '12mo')
     # refresh_opts(symbol)
-    return redirect('/showLineChart/' + symbol)
+    # return redirect('/showLineChart/' + symbol)
 
 @app.route("/showLineChart/<symbol>")
 def showLineChart(symbol):

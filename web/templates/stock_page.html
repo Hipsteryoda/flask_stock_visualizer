@@ -91,9 +91,7 @@
     {% endfor %}
     </ul>
   </div>
-  <button onclick={{ refresh_opts }}>
-    Refresh
-  </button>
+  <a href={{ url_for('showLineChart', symbol=symbol) }}><input type="button" value="Refresh"></a>
   <div>
     {{ facts_table | safe }}
   </div>
