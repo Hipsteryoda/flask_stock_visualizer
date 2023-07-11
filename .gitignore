@@ -1,4 +1,4 @@
 web/__pycache__/
 notebooks/
 web/sql_cheat_sheet.md
-web/test.ipynb
+web/test.ipynb/db/database.db
