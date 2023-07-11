@@ -37,26 +37,26 @@ def build_stocks_df(gainers_df) -> pd.DataFrame:
     for s in gainers_df['Symbol']:
         if loop == 0:
             df = get_history(s, period=period)
-            df['ticker'] = s
+            df['Symbol'] = s
             loop +=1
         else:
             temp_df = get_history(s, period=period)
-            temp_df['ticker'] = s
+            temp_df['Symbol'] = s
             df = pd.concat([df, temp_df])
             
     return df
 
 def graph_trend(df, symbol):
-    x=np.array([n for n in range(0,len(df[df['ticker']==symbol]))])
-    y=np.array(df[df['ticker']==symbol]['Close'])
+    x=np.array([n for n in range(0,len(df[df['Symbol']==symbol]))])
+    y=np.array(df[df['Symbol']==symbol]['Close'])
     a, b = np.polyfit(x, y, 1)
-    df[df['ticker']==symbol]['Close'].plot()
-    plt.plot(df[df['ticker']==symbol]['Close'].index, a*x+b)
+    df[df['Symbol']==symbol]['Close'].plot()
+    plt.plot(df[df['Symbol']==symbol]['Close'].index, a*x+b)
     plt.title(symbol)
 
 def get_trend_slope(df, symbol):
-    x=np.array([n for n in range(0,len(df[df['ticker']==symbol]))])
-    y=np.array(df[df['ticker']==symbol]['Close'])
+    x=np.array([n for n in range(0,len(df[df['Symbol']==symbol]))])
+    y=np.array(df[df['Symbol']==symbol]['Close'])
     a, b = np.polyfit(x, y, 1)
     return a
 
@@ -64,13 +64,13 @@ def find_positive_trends(df, bol_df):
     """
     returns the symbols with positive trend slopes over the history of the data
     """
-    for symbol in df['ticker'].unique():
+    for symbol in df['Symbol'].unique():
         a = get_trend_slope(bol_df, symbol)
         if a > 0:
             print(f'{symbol} a greater than 0: {a}')
             
 def trend_slope(df, bol_df, symbol_col):
-    for symbol in df[symbol_col].unique():
+    for symbol in bol_df[symbol_col].unique():
         a = get_trend_slope(bol_df, symbol)
         idx = df[df[symbol_col] == symbol].index
         df.loc[idx, 'trend_slope'] = a
@@ -82,12 +82,12 @@ def n_day_moving_average(df, rolling_window):
     """
     # reset the index to an array
     df.reset_index(inplace=True)
-    for symbol in df['ticker'].unique():
+    for symbol in df['Symbol'].unique():
         # get min and max index references to pass to .loc later
-        idx_ref_min = min(df[df['ticker']==symbol].index)
-        idx_ref_max = max(df[df['ticker']==symbol].index)
+        idx_ref_min = min(df[df['Symbol']==symbol].index)
+        idx_ref_max = max(df[df['Symbol']==symbol].index)
         
-        close_series = df[df['ticker']==symbol]['Close']
+        close_series = df[df['Symbol']==symbol]['Close']
         rolling = close_series.rolling(window=rolling_window)
         twenty_day_rolling = rolling.mean()
         
@@ -103,12 +103,12 @@ def bolinger_bands(df, rolling_avg_col, rolling_window):
     """
     # reset the index to an array
     df.reset_index(inplace=True)
-    for symbol in df['ticker'].unique():
+    for symbol in df['Symbol'].unique():
         # get min and max index references to pass to .loc later
-        idx_ref_min = min(df[df['ticker']==symbol].index)
-        idx_ref_max = max(df[df['ticker']==symbol].index)
+        idx_ref_min = min(df[df['Symbol']==symbol].index)
+        idx_ref_max = max(df[df['Symbol']==symbol].index)
         
-        n_day_rolling = df[df['ticker']==symbol][rolling_avg_col].rolling(window=rolling_window)
+        n_day_rolling = df[df['Symbol']==symbol][rolling_avg_col].rolling(window=rolling_window)
         standard_dev = n_day_rolling.std()
         
         # set twenty day rolling average at proper indexes for given symbol
@@ -122,23 +122,23 @@ def bolinger_bands(df, rolling_avg_col, rolling_window):
 
 def plotly_plot_bolinger(df, symbol, window):
     pd.options.plotting.backend = "plotly"
-    # fig = df[df['ticker']==symbol][['Close', f'{window}_day_moving_average', 'bolinger_upper_band', 'bolinger_lower_band']].plot(title=symbol)
-    x_axis=df[df['ticker']==symbol].index
+    # fig = df[df['Symbol']==symbol][['Close', f'{window}_day_moving_average', 'bolinger_upper_band', 'bolinger_lower_band']].plot(title=symbol)
+    x_axis=df[df['Symbol']==symbol].index
     fig = go.Figure(
-        go.Scatter(x=x_axis, y=df[df['ticker']==symbol]['Close'], 
+        go.Scatter(x=x_axis, y=df[df['Symbol']==symbol]['Close'], 
                     name='Close Price'),
         layout={'title':f'{symbol}'}
         )
     fig.add_trace(
-        go.Scatter(x=x_axis, y=df[df['ticker']==symbol][f'optimum_day_moving_average'], 
+        go.Scatter(x=x_axis, y=df[df['Symbol']==symbol][f'optimum_day_moving_average'], 
                     name='Moving Average')
         )
     fig.add_trace(
-        go.Scatter(x=x_axis, y=df[df['ticker']==symbol][f'bolinger_upper_band'], 
+        go.Scatter(x=x_axis, y=df[df['Symbol']==symbol][f'bolinger_upper_band'], 
                     name='Upper Band')
     )
     fig.add_trace(
-        go.Scatter(x=x_axis, y=df[df['ticker']==symbol][f'bolinger_lower_band'], 
+        go.Scatter(x=x_axis, y=df[df['Symbol']==symbol][f'bolinger_lower_band'], 
                     name='Lower Band')
     )
     return fig
