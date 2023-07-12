@@ -38,7 +38,6 @@ def get_summarized_articles():
     
     return ''
 
-
 def post_optimization_params(symbol, period):
         single_opts = Single_Parameter_Optimizer(analysis.get_history(symbol, period))
         two_opts = Multiple_Parameter_Optimizer(analysis.get_history(symbol, period))

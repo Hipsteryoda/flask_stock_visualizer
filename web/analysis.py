@@ -6,6 +6,8 @@ import yfinance as yf
 
 import matplotlib.pyplot as plt
 
+from mv_avg_window_optimizer import Single_Parameter_Optimizer, Multiple_Parameter_Optimizer
+
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 import plotly.express as px
@@ -14,7 +16,7 @@ pio.renderers.default = "browser"
 
 # NLP stuff
 # import sklearn
-import nltk, re
+import nltk, re, sqlite3
 from nltk.tokenize import word_tokenize, sent_tokenize
 from nltk.corpus import stopwords
 from nltk.sentiment import SentimentIntensityAnalyzer
@@ -22,14 +24,67 @@ from collections import Counter
 
 from bs4 import BeautifulSoup
 
+from datetime import datetime
+
+def get_db_connection():
+    conn = sqlite3.connect('db/database.db')
+    conn.row_factory = sqlite3.Row
+    return conn
+
 class StockData:
     def __init__(self):
         # get the biggest gainers for the day
         self.gainers_df = self.get_biggest_gainers()
         # build history of the stocks in the gainers (build_stocks_df)
         self.history_df = self.build_stocks_df(self.gainers_df)
+        self.db_conn = get_db_connection()
         
         
+    def get_optimized_ma_params(self) -> pd.DataFrame:
+        """
+        Fetches optimize parameters or updates parameters for all symbols in object
+        """
+        for symbol in self.history_df['Symbol'].unique():  
+            conn = get_db_connection()  
+            # find single and mult day optimum moving averages
+            ## First, check if symbol is in db
+            opt_params_df = pd.read_sql_query(f"""SELECT MAX(datetime), opt_single_ma_window, opt_two_ma_window_1, opt_two_ma_window_2
+                FROM symbol_param_optimized
+                WHERE symbol = '{symbol}';""",
+                con=conn)
+            if opt_params_df.iloc[0,0] == None:
+                # calculate optimum params and write to db
+                self.calc_optimum_params()
+                opt_params_df = pd.read_sql_query(f"""SELECT MAX(datetime), opt_single_ma_window, opt_two_ma_window_1, opt_two_ma_window_2
+                    FROM symbol_param_optimized
+                    WHERE symbol = '{symbol}';""",
+                    con=conn)
+        
+        
+    def update_params_db(self):
+        """
+        For those symbols that did not exist in the database when checked from get_optimized_ma_params(), updates the database with their information
+        """
+        pass
+                
+                                        
+    def calc_optimum_params(self, symbol):
+        single_opts = Single_Parameter_Optimizer(self.history_df)
+        two_opts = Multiple_Parameter_Optimizer(self.history_df)
+        payload = pd.DataFrame({'symbol':symbol,
+                'datetime':datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f"),
+                'opt_single_ma_window':single_opts.optimum_window,
+                'opt_single_multiple':single_opts.optimum_multiple,
+                'opt_two_ma_window_1':two_opts.optimum_window_1,
+                'opt_two_ma_window_2':two_opts.optimum_window_2,
+                'opt_two_multiple':two_opts.optimum_multiple,
+                'organic_growth':single_opts.organic_growth},
+                index=[0])
+        payload.to_sql('symbol_param_optimized',
+                con=self.db_conn,
+                if_exists='append',
+                index=False)
+    
     def get_biggest_gainers(self) -> pd.DataFrame:
         r = requests.get('https://www.dogsofthedow.com/biggest-stock-gainers-today.htm')
         gainers_df = pd.read_html(r.text)[0]
@@ -52,7 +107,28 @@ class StockData:
                 temp_df['Symbol'] = s
                 df = pd.concat([df, temp_df])  
         return df
+    
+    def bolinger_bands(self, df, rolling_avg_col, rolling_window):
+        """
+        Calculates and creates bolinger band values (upper and lower) into the dataframe
+        """
+        # reset the index to an array
+        df.reset_index(inplace=True)
+        for symbol in df['Symbol'].unique():
+            # get min and max index references to pass to .loc later
+            idx_ref_min = min(df[df['Symbol']==symbol].index)
+            idx_ref_max = max(df[df['Symbol']==symbol].index)
+            
+            n_day_rolling = df[df['Symbol']==symbol][rolling_avg_col].rolling(window=rolling_window)
+            standard_dev = n_day_rolling.std()
+            
+            # set twenty day rolling average at proper indexes for given symbol
+            df.loc[idx_ref_min:idx_ref_max+1,'bolinger_upper_band'] = df.loc[idx_ref_min:idx_ref_max+1,rolling_avg_col] + standard_dev*2
+            df.loc[idx_ref_min:idx_ref_max+1,'bolinger_lower_band'] = df.loc[idx_ref_min:idx_ref_max+1,rolling_avg_col] - standard_dev*2
+            
+        df.set_index('Date', inplace=True)
 
+        return df       
 
 # def get_biggest_gainers() -> pd.DataFrame:
 #     r = requests.get('https://www.dogsofthedow.com/biggest-stock-gainers-today.htm')
@@ -129,27 +205,27 @@ def n_day_moving_average(df, rolling_window):
     df.set_index('Date', inplace=True)
     return df
      
-def bolinger_bands(df, rolling_avg_col, rolling_window):
-    """
-    Calculates and creates bolinger band values (upper and lower) into the dataframe
-    """
-    # reset the index to an array
-    df.reset_index(inplace=True)
-    for symbol in df['Symbol'].unique():
-        # get min and max index references to pass to .loc later
-        idx_ref_min = min(df[df['Symbol']==symbol].index)
-        idx_ref_max = max(df[df['Symbol']==symbol].index)
+# def bolinger_bands(df, rolling_avg_col, rolling_window):
+#     """
+#     Calculates and creates bolinger band values (upper and lower) into the dataframe
+#     """
+#     # reset the index to an array
+#     df.reset_index(inplace=True)
+#     for symbol in df['Symbol'].unique():
+#         # get min and max index references to pass to .loc later
+#         idx_ref_min = min(df[df['Symbol']==symbol].index)
+#         idx_ref_max = max(df[df['Symbol']==symbol].index)
         
-        n_day_rolling = df[df['Symbol']==symbol][rolling_avg_col].rolling(window=rolling_window)
-        standard_dev = n_day_rolling.std()
+#         n_day_rolling = df[df['Symbol']==symbol][rolling_avg_col].rolling(window=rolling_window)
+#         standard_dev = n_day_rolling.std()
         
-        # set twenty day rolling average at proper indexes for given symbol
-        df.loc[idx_ref_min:idx_ref_max+1,'bolinger_upper_band'] = df.loc[idx_ref_min:idx_ref_max+1,rolling_avg_col] + standard_dev*2
-        df.loc[idx_ref_min:idx_ref_max+1,'bolinger_lower_band'] = df.loc[idx_ref_min:idx_ref_max+1,rolling_avg_col] - standard_dev*2
+#         # set twenty day rolling average at proper indexes for given symbol
+#         df.loc[idx_ref_min:idx_ref_max+1,'bolinger_upper_band'] = df.loc[idx_ref_min:idx_ref_max+1,rolling_avg_col] + standard_dev*2
+#         df.loc[idx_ref_min:idx_ref_max+1,'bolinger_lower_band'] = df.loc[idx_ref_min:idx_ref_max+1,rolling_avg_col] - standard_dev*2
         
-    df.set_index('Date', inplace=True)
+#     df.set_index('Date', inplace=True)
 
-    return df       
+#     return df       
 
 
 def plotly_plot_bolinger(df, symbol, window):
