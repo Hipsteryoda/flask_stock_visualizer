@@ -104,10 +104,10 @@ def home():
 @app.route('/rebuild')
 def rebuild():
     # Get list of gainer stocks
-    df = analysis.get_biggest_gainers()
+    # df = analysis.StockData().gainers_df
     
     # Assemble their history
-    built_df = analysis.build_stocks_df(df)
+    built_df = analysis.StockData().history_df
 
     # Get moving average and bolinger bands
     ma_df = analysis.n_day_moving_average(built_df, 20)
