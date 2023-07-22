@@ -37,6 +37,8 @@ class StockData:
         self.gainers_df = self.get_biggest_gainers()
         # build history of the stocks in the gainers (build_stocks_df)
         self.history_df = self.build_stocks_df(self.gainers_df)
+        self.ma_df = self.n_day_moving_average()
+        self.bol_df = self.bolinger_bands('optimum_day_moving_average', 20)
         self.db_conn = get_db_connection()
         
         
@@ -108,11 +110,34 @@ class StockData:
                 df = pd.concat([df, temp_df])  
         return df
     
-    def bolinger_bands(self, df, rolling_avg_col, rolling_window):
+    def n_day_moving_average(self, rolling_window=20):
+        """
+        Calculates and creates twenty day moving average values into the dataframe
+        """
+        # reset the index to an array
+        df = self.history_df.copy()
+        df.reset_index(inplace=True)
+        for symbol in df['Symbol'].unique():
+            # get min and max index references to pass to .loc later
+            idx_ref_min = min(df[df['Symbol']==symbol].index)
+            idx_ref_max = max(df[df['Symbol']==symbol].index)
+            
+            close_series = df[df['Symbol']==symbol]['Close']
+            rolling = close_series.rolling(window=rolling_window)
+            twenty_day_rolling = rolling.mean()
+            
+            # set twenty day rolling average at proper indexes for given symbol
+            df.loc[idx_ref_min:idx_ref_max+1,f'optimum_day_moving_average'] = twenty_day_rolling
+            
+        df.set_index('Date', inplace=True)
+        return df
+    
+    def bolinger_bands(self, rolling_avg_col, rolling_window):
         """
         Calculates and creates bolinger band values (upper and lower) into the dataframe
         """
         # reset the index to an array
+        df = self.ma_df
         df.reset_index(inplace=True)
         for symbol in df['Symbol'].unique():
             # get min and max index references to pass to .loc later

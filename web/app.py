@@ -107,20 +107,19 @@ def rebuild():
     # df = analysis.StockData().gainers_df
     
     # Assemble their history
-    built_df = analysis.StockData().history_df
+    # built_df = analysis.StockData().history_df
 
     # Get moving average and bolinger bands
-    ma_df = analysis.n_day_moving_average(built_df, 20)
-    bol_df = analysis.bolinger_bands(ma_df, 
-                                     'optimum_day_moving_average', 
-                                     20)
+    # ma_df = analysis.StockData.n_day_moving_average(built_df, 20)
+    stockdata = analysis.StockData()
+    bol_df = stockdata.bol_df
 
     conn = get_db_connection()
     bol_df.to_sql('bol_df', 
                   con=conn, 
                   if_exists='replace')
     
-    today_results_df = analysis.trend_slope(df, bol_df, 'Symbol')
+    today_results_df = analysis.trend_slope(stockdata.gainers_df, bol_df, 'Symbol')
     today_results_df.to_sql('today_results',
                             con=conn,
                             if_exists='replace')
