@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 import sqlite3
 import os
 from datetime import datetime, date, time
-from mv_avg_window_optimizer import Single_Parameter_Optimizer, Multiple_Parameter_Optimizer
+from mv_avg_window_optimizer import Optimized_Symbol
 
 app = Flask(__name__)
 
@@ -39,8 +39,8 @@ def get_summarized_articles():
     return ''
 
 def post_optimization_params(symbol, period):
-        single_opts = Single_Parameter_Optimizer(analysis.get_history(symbol, period))
-        two_opts = Multiple_Parameter_Optimizer(analysis.get_history(symbol, period))
+        single_opts = Optimized_Symbol.Single_Parameter_Optimizer(analysis.get_history(symbol, period))
+        two_opts = Optimized_Symbol.Multiple_Parameter_Optimizer(analysis.get_history(symbol, period))
         payload = pd.DataFrame({'symbol':symbol,
                                 'datetime':datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f"),
                                 'opt_single_ma_window':single_opts.optimum_window,
