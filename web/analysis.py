@@ -6,7 +6,7 @@ import yfinance as yf
 
 import matplotlib.pyplot as plt
 
-from mv_avg_window_optimizer import Single_Parameter_Optimizer, Multiple_Parameter_Optimizer
+from mv_avg_window_optimizer import Optimized_Symbol
 
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
@@ -69,8 +69,8 @@ class StockData:
                 
                                         
     def calc_optimum_params(self, symbol):
-        single_opts = Single_Parameter_Optimizer(self.history_df)
-        two_opts = Multiple_Parameter_Optimizer(self.history_df)
+        single_opts = Optimized_Symbol.Single_Parameter_Optimizer(self.history_df)
+        two_opts = Optimized_Symbol.Multiple_Parameter_Optimizer(self.history_df)
         payload = pd.DataFrame({'symbol':symbol,
                 'datetime':datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f"),
                 'opt_single_ma_window':single_opts.optimum_window,

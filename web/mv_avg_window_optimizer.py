@@ -1,18 +1,64 @@
 import yfinance as yf
 import pandas as pd
 import numpy as np
+import sqlite3
+from datetime import datetime
 
 def add_lag_price(df):
     df['price'] = df['Open'].shift(-1)
     return df
     
-    
+
+
+#TODO:
+## - [x] have Optimized_Symbol connect to database
+## - [x] have Optimized_Symbol check if ticker has information on symbol in database
+## - [] If info exists on symbol, use it rather than recalculate
+##  - [] Return timestamp of data
+## - [x] Else if info does not exist, calculate
+
+
+
 class Optimized_Symbol:
     def __init__(self, symbol, period="12mo"):
-        # get historical data for stock
-        self.history = yf.Ticker(symbol).history()
-        self.single_param_opt = self.Single_Parameter_Optimizer(self.history)
-        self.multi_param_opt = self.Multiple_Parameter_Optimizer(self.history)
+        self.symbol = symbol.upper()
+        # get optimized paramaters for symbol from database
+        self.opt_param_df = self.query_db()
+        # check if optimized params exist
+        if self.opt_param_df.iloc[0,0] == None:
+            # calculate
+            self.history = yf.Ticker(symbol).history()
+            self.single_param_opt = self.Single_Parameter_Optimizer(self.history)
+            self.multi_param_opt = self.Multiple_Parameter_Optimizer(self.history)
+            # write to db
+            self.write_to_db()
+        
+    def get_db_connection(self):
+        conn = sqlite3.connect('db/database.db')
+        conn.row_factory = sqlite3.Row
+        return conn
+    
+    def query_db(self):
+        opt_params_df = pd.read_sql_query(f"""SELECT MAX(datetime), opt_single_ma_window, opt_two_ma_window_1, opt_two_ma_window_2
+                FROM symbol_param_optimized
+                WHERE symbol = '{self.symbol}';""",
+                con=self.get_db_connection())
+        return opt_params_df
+    
+    def write_to_db(self):
+            payload = pd.DataFrame({'symbol':self.symbol,
+            'datetime':datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f"),
+            'opt_single_ma_window':self.single_param_opt.optimum_window,
+            'opt_single_multiple':self.single_param_opt.optimum_multiple,
+            'opt_two_ma_window_1':self.multi_param_opt.optimum_window_1,
+            'opt_two_ma_window_2':self.multi_param_opt.optimum_window_2,
+            'opt_two_multiple':self.multi_param_opt.optimum_multiple,
+            'organic_growth':self.single_param_opt.organic_growth},
+            index=[0])
+            payload.to_sql('symbol_param_optimized',
+                           con=self.get_db_connection(),
+                           if_exists='append',
+                           index=False)
     
     # Two classes
     ## One for a single parameter window optimizer
