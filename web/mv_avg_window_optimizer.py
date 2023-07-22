@@ -15,12 +15,10 @@ class Optimized_Symbol:
         self.opt_param_df = self.query_db()
         # check if optimized params exist
         if self.opt_param_df.iloc[0,0] == None:
-            # calculate
-            self.history = yf.Ticker(symbol).history()
-            self.single_param_opt = self.Single_Parameter_Optimizer(self.history)
-            self.multi_param_opt = self.Multiple_Parameter_Optimizer(self.history)
-            # write to db
-            self.write_to_db()
+            # create data with refresh method
+            self.refresh_data()
+            # assign df from db
+            self.opt_param_df = self.query_db()
         
     def get_db_connection(self):
         conn = sqlite3.connect('db/database.db')
@@ -48,6 +46,15 @@ class Optimized_Symbol:
                            con=self.get_db_connection(),
                            if_exists='append',
                            index=False)
+            
+    def refresh_data(self):
+        # calculate information
+        self.history = yf.Ticker(self.symbol).history()
+        self.single_param_opt = self.Single_Parameter_Optimizer(self.history)
+        self.multi_param_opt = self.Multiple_Parameter_Optimizer(self.history)
+        # write to database
+        self.write_to_db()
+        
     
     # Two classes
     ## One for a single parameter window optimizer
