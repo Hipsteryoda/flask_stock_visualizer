@@ -7,17 +7,6 @@ from datetime import datetime
 def add_lag_price(df):
     df['price'] = df['Open'].shift(-1)
     return df
-    
-
-
-#TODO:
-## - [x] have Optimized_Symbol connect to database
-## - [x] have Optimized_Symbol check if ticker has information on symbol in database
-## - [] If info exists on symbol, use it rather than recalculate
-##  - [] Return timestamp of data
-## - [x] Else if info does not exist, calculate
-
-
 
 class Optimized_Symbol:
     def __init__(self, symbol, period="12mo"):
