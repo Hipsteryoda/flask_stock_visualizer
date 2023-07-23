@@ -1,8 +1,17 @@
+# Yahoo Finance API
 import yfinance as yf
+
+# Data manipulation stuff
 import pandas as pd
 import numpy as np
-import sqlite3
+
+# Database Stuff
+import sqlite3, psycopg2
+
+# Other
 from datetime import datetime
+
+##################################
 
 def add_lag_price(df):
     df['price'] = df['Open'].shift(-1)
@@ -11,49 +20,79 @@ def add_lag_price(df):
 class Optimized_Symbol:
     def __init__(self, symbol, period="12mo"):
         self.symbol = symbol.upper()
-        # get optimized paramaters for symbol from database
-        self.opt_param_df = self.query_db()
-        # check if optimized params exist
-        if self.opt_param_df.iloc[0,0] == None:
-            # create data with refresh method
-            self.refresh_data()
-            # assign df from db
-            self.opt_param_df = self.query_db()
-        
-    def get_db_connection(self):
-        conn = sqlite3.connect('db/database.db')
-        conn.row_factory = sqlite3.Row
-        return conn
-    
-    def query_db(self):
-        opt_params_df = pd.read_sql_query(f"""SELECT MAX(datetime), opt_single_ma_window, opt_two_ma_window_1, opt_two_ma_window_2
-                FROM symbol_param_optimized
-                WHERE symbol = '{self.symbol}';""",
-                con=self.get_db_connection())
-        return opt_params_df
+        self.calc_period = period
+        self.history = yf.Ticker(self.symbol).history()
+        self.single_param_opt = self.Single_Parameter_Optimizer(self.history)
+        self.multi_param_opt = self.Multiple_Parameter_Optimizer(self.history)
+        # self.refresh_data()
     
     def write_to_db(self):
-            payload = pd.DataFrame({'symbol':self.symbol,
-            'datetime':datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f"),
-            'opt_single_ma_window':self.single_param_opt.optimum_window,
-            'opt_single_multiple':self.single_param_opt.optimum_multiple,
-            'opt_two_ma_window_1':self.multi_param_opt.optimum_window_1,
-            'opt_two_ma_window_2':self.multi_param_opt.optimum_window_2,
-            'opt_two_multiple':self.multi_param_opt.optimum_multiple,
-            'organic_growth':self.single_param_opt.organic_growth},
-            index=[0])
-            payload.to_sql('symbol_param_optimized',
-                           con=self.get_db_connection(),
-                           if_exists='append',
-                           index=False)
+        """
+        Writes data from Single and Multi param optimizations to database.
+        First checks if symbol exists in `optimum_symbol_parameters`.
+        If symbol exists, updates existing row.
+        If symbol does not exist, inserts data in new row.
+        """
+        
+        period = self.calc_period
+        conn = psycopg2.connect("dbname=stock_app user=ksmith")
+        cur = conn.cursor()
+        
+        insert_query = f'''
+        INSERT INTO optimum_symbol_parameters
+        (symbol, last_updated, calc_period, single_param_optimum_window,
+        single_param_optimum_multiple, multi_param_optimum_window_1,
+        multi_param_optimum_window_2, multi_param_optimum_multiple,
+        organic_growth)
+        VALUES
+        ('{self.symbol.upper()}', '{datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")}',
+        '{period}', {self.single_param_opt.optimum_window}, {self.single_param_opt.optimum_multiple},
+        {self.multi_param_opt.optimum_window_1}, {self.multi_param_opt.optimum_window_2},
+        {self.multi_param_opt.optimum_multiple}, {self.single_param_opt.organic_growth})
+        '''
+        update_query = f'''
+        UPDATE optimum_symbol_parameters
+        SET last_updated='{datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")}',
+        calc_period='{self.calc_period}',
+        single_param_optimum_window={self.single_param_opt.optimum_window},
+        single_param_optimum_multiple={self.single_param_opt.optimum_multiple},
+        multi_param_optimum_window_1={self.multi_param_opt.optimum_window_1},
+        multi_param_optimum_window_2={self.multi_param_opt.optimum_window_2},
+        multi_param_optimum_multiple={self.multi_param_opt.optimum_multiple},
+        organic_growth={self.single_param_opt.organic_growth}
+        WHERE symbol = '{self.symbol}';'''
+        
+        select_query = f'''
+        SELECT * FROM optimum_symbol_parameters
+        WHERE symbol = '{self.symbol}';'''
+        
+        # check if symbol exists in table
+        cur.execute(select_query)
+        if len(cur.fetchall()) > 0:
+            # then the symbol exists
+            # use the update_query
+            cur.execute(update_query)
+        else:
+            # use insert query
+            cur.execute(insert_query)
+
+        #commit changes
+        conn.commit()
+
+        # close connection
+        cur.close()
+        conn.close()
             
     def refresh_data(self):
+        """
+        Caclulates the newest single and multi param optimizations and then writes to database
+        """
         # calculate information
         self.history = yf.Ticker(self.symbol).history()
         self.single_param_opt = self.Single_Parameter_Optimizer(self.history)
         self.multi_param_opt = self.Multiple_Parameter_Optimizer(self.history)
-        # write to database
-        self.write_to_db()
+        ## Uncomment to automatically write to database
+        # self.write_to_db()
         
     
     # Two classes

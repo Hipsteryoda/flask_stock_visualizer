@@ -4,3 +4,4 @@ web/sql_cheat_sheet.md
 web/test.ipynb
 db/database.db
 web/investigation*
+web/*.ipynb
