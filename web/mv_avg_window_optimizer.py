@@ -93,7 +93,17 @@ class Optimized_Symbol:
         self.multi_param_opt = self.Multiple_Parameter_Optimizer(self.history)
         ## Uncomment to automatically write to database
         # self.write_to_db()
-        
+    
+    def plot_params(self):
+        # Plot lines for 
+            # Closing price
+            # single sma
+            # single sma gains/losses
+            # multi sma 1
+            # multi sma 2
+            # multi sma gains/losses
+            
+        pass
     
     # Two classes
     ## One for a single parameter window optimizer

@@ -155,29 +155,6 @@ class StockData:
 
         return df       
 
-# def get_biggest_gainers() -> pd.DataFrame:
-#     r = requests.get('https://www.dogsofthedow.com/biggest-stock-gainers-today.htm')
-#     gainers_df = pd.read_html(r.text)[0]
-#     return gainers_df
-
-# def get_history(ticker, period):
-#     t = yf.Ticker(ticker)
-#     return t.history(period)
-
-# def build_stocks_df(gainers_df) -> pd.DataFrame:
-#     loop = 0
-#     period = "12mo"
-#     for s in gainers_df['Symbol']:
-#         if loop == 0:
-#             df = get_history(s, period=period)
-#             df['Symbol'] = s
-#             loop +=1
-#         else:
-#             temp_df = get_history(s, period=period)
-#             temp_df['Symbol'] = s
-#             df = pd.concat([df, temp_df])
-            
-#     return df
 
 def graph_trend(df, symbol):
     x=np.array([n for n in range(0,len(df[df['Symbol']==symbol]))])
