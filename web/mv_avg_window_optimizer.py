@@ -8,6 +8,10 @@ import numpy as np
 # Database Stuff
 import sqlite3, psycopg2
 
+# Plotting stuff
+import plotly
+import plotly.graph_objects as go
+
 # Other
 from datetime import datetime
 
@@ -21,10 +25,19 @@ class Optimized_Symbol:
     def __init__(self, symbol, period="12mo"):
         self.symbol = symbol.upper()
         self.calc_period = period
-        self.history = yf.Ticker(self.symbol).history()
+        self.history = yf.Ticker(self.symbol).history(period=period)
         self.single_param_opt = self.Single_Parameter_Optimizer(self.history)
         self.multi_param_opt = self.Multiple_Parameter_Optimizer(self.history)
         # self.refresh_data()
+    
+    def create_db_connection(self):
+        conn = psycopg2.connect("dbname=stock_app user=ksmith")
+        cur = conn.cursor()
+        return conn, cur
+
+    def close_db_connection(self, conn, cur):
+        cur.close()
+        conn.close()
     
     def write_to_db(self):
         """
@@ -104,6 +117,56 @@ class Optimized_Symbol:
             # multi sma gains/losses
             
         pass
+    
+    def two_ma_calc(self, single_sma, multi_sma_1, multi_sma_2):
+        ma_df = self.history.copy()
+        ma_df['single_sma'] = ma_df.Close.rolling(single_sma).mean()
+        ma_df['multi_sma_1'] = ma_df.Close.rolling(multi_sma_1).mean()
+        ma_df['multi_sma_2'] = ma_df.Close.rolling(multi_sma_2).mean()
+        return ma_df
+    
+    def plot_custom_ma(self):
+        # get single, multi_1, and multi_2 params for symbol from db
+        conn, cur = self.create_db_connection()
+        query = f'''
+        SELECT single_param_optimum_window, multi_param_optimum_window_1, multi_param_optimum_window_2, calc_period
+        FROM optimum_symbol_parameters
+        WHERE symbol = '{self.symbol}';
+        '''
+        cur.execute(query)
+        results = cur.fetchall()
+        single_param_optimum_window = results[0][0]
+        multi_param_optimum_window_1 = results[0][1]
+        multi_param_optimum_window_2 = results[0][2]
+        calc_period = results[0][3]
+        
+        # reused from mv_avg_window_optimizer.Multiple_Parameter_Optimizer.two_ma_calc()
+        # history_df = self.history
+        ma_df = self.two_ma_calc(single_param_optimum_window, multi_param_optimum_window_1, multi_param_optimum_window_2)
+        
+        # plot the stuff
+        x_axis=ma_df.index
+        fig = go.Figure(
+            go.Scatter(x=x_axis, y=ma_df['Close'], 
+                        name='Close Price'),
+            layout={'title':f'{self.symbol}'}
+            )
+        fig.add_trace(
+            go.Scatter(x=x_axis, y=ma_df['single_sma'], 
+                        name=f'{single_param_optimum_window} Day Moving Average (single)')
+            )
+        fig.add_trace(
+            go.Scatter(x=x_axis, y=ma_df['multi_sma_1'], 
+                        name=f'{multi_param_optimum_window_1} Day Moving Average (multi_1)')
+        )
+        fig.add_trace(
+            go.Scatter(x=x_axis, y=ma_df['multi_sma_2'], 
+                        name=f'{multi_param_optimum_window_2} Day Moving Average (multi_2)')
+        )
+        # fig.show()
+        
+        self.close_db_connection(conn, cur)
+        return fig
     
     # Two classes
     ## One for a single parameter window optimizer
