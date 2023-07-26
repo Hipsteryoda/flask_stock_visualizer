@@ -6,3 +6,4 @@ db/database.db
 web/investigation*
 web/*.ipynb
 docs/
+db/
