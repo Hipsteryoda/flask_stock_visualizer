@@ -107,18 +107,7 @@ class Optimized_Symbol:
         ## Uncomment to automatically write to database
         # self.write_to_db()
     
-    def plot_params(self):
-        # Plot lines for 
-            # Closing price
-            # single sma
-            # single sma gains/losses
-            # multi sma 1
-            # multi sma 2
-            # multi sma gains/losses
-            
-        pass
-    
-    def two_ma_calc(self, single_sma, multi_sma_1, multi_sma_2):
+    def two_ma_calc(self, single_sma, multi_sma_1, multi_sma_2) -> pd.DataFrame:
         ma_df = self.history.copy()
         ma_df['single_sma'] = ma_df.Close.rolling(single_sma).mean()
         ma_df['multi_sma_1'] = ma_df.Close.rolling(multi_sma_1).mean()
@@ -141,7 +130,6 @@ class Optimized_Symbol:
         calc_period = results[0][3]
         
         # reused from mv_avg_window_optimizer.Multiple_Parameter_Optimizer.two_ma_calc()
-        # history_df = self.history
         ma_df = self.two_ma_calc(single_param_optimum_window, multi_param_optimum_window_1, multi_param_optimum_window_2)
         
         # plot the stuff
