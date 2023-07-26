@@ -76,9 +76,7 @@ class Optimized_Symbol:
         self.multi_param_optimum_multiple = params[0][8]
         self.organic_growth = params[0][9]
         self.close_db_connection(conn, cur)
-        # return params
-        
-        
+        # return params      
     
     def write_to_db(self):
         """

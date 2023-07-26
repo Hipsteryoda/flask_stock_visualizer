@@ -5,3 +5,4 @@ web/test.ipynb
 db/database.db
 web/investigation*
 web/*.ipynb
+docs/
