@@ -4,7 +4,7 @@ import json
 import plotly
 import analysis
 import plotly.graph_objects as go
-import sqlite3
+import sqlite3, psycopg2
 import os
 from datetime import datetime, date, time
 from mv_avg_window_optimizer import Optimized_Symbol
@@ -17,6 +17,15 @@ def get_db_connection():
     conn = sqlite3.connect('db/database.db')
     conn.row_factory = sqlite3.Row
     return conn
+
+def create_psql_db_connection():
+    conn = psycopg2.connect("dbname=stock_app user=ksmith")
+    cur = conn.cursor()
+    return conn, cur
+
+def close_psql_db_connection(conn, cur):
+    cur.close()
+    conn.close()
 
 def read_bol_df():
     bol_df = pd.read_sql('SELECT * FROM bol_df', 
@@ -57,13 +66,22 @@ def post_optimization_params(symbol, period):
 
 def read_optimization_params(symbol):
     # retrieve latest info from db for parameter optimization
-    query = f'''SELECT * FROM symbol_param_optimized
-WHERE datetime IN (SELECT max(datetime) FROM symbol_param_optimized WHERE symbol = '{symbol}');'''
-    conn = get_db_connection()
-    facts_table = pd.read_sql_query(
-        sql=query,
-        con=conn
-    )
+    query = f'''
+    SELECT * FROM optimum_symbol_parameters
+    WHERE symbol = '{symbol}';'''
+    # conn = get_db_connection()
+    # facts_table = pd.read_sql_query(
+    #     sql=query,
+    #     con=conn
+    # )
+    conn, cur = create_psql_db_connection()
+    cur.execute(query)
+    facts_table = pd.DataFrame(data=cur.fetchall(),
+                               columns=['symbol_id','symbol','last_updated','calc_period',
+                                        'single_param_optimum_window','single_param_optimum_multiple',
+                                        'multi_param_optimum_window_1','multi_param_optimum_window_2',
+                                        'multi_param_optimum_multiple','organic_growth'])
+    close_psql_db_connection(conn, cur)
     return facts_table
     
 # def refresh_opts(symbol):
@@ -134,17 +152,6 @@ def optimization_refresh(symbol):
 
 @app.route("/showLineChart/<symbol>")
 def showLineChart(symbol):
-    # connect to and read the db table
-    conn = get_db_connection()
-    bol_df = read_bol_df()
-    facts_table = read_optimization_params(symbol)
-    period = '12mo'
-    if facts_table.shape[0] == 0:
-        # get and post params
-        post_optimization_params(symbol, period)
-        facts_table = read_optimization_params(symbol)
-
-
     # Stock article stuff
     news = analysis.News(symbol)
     titles = news.get_titles()
@@ -153,8 +160,14 @@ def showLineChart(symbol):
     for idx, val in enumerate(titles):
         link_dict[titles[idx]] = [urls[idx], analysis.Article(urls[idx]).polarity_scores()]
     
+    # instantiate Optimized_Symbol
+    opt = Optimized_Symbol(symbol)
+    
+    # TODO: update Optimized_Symbol to check db first before calculating attributes
+    facts_table = read_optimization_params(symbol)
+    
     # create the plot object (trace)
-    trace = analysis.plotly_plot_bolinger(bol_df, symbol, facts_table.opt_single_ma_window)
+    trace = opt.plot_custom_ma()
     
     # encode the plot object into json
     graphJSON = json.dumps(trace, cls=plotly.utils.PlotlyJSONEncoder)
