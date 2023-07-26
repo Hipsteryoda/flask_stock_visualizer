@@ -26,10 +26,16 @@ class Optimized_Symbol:
         self.symbol = symbol.upper()
         self.calc_period = period
         self.history = yf.Ticker(self.symbol).history(period=period)
-        self.single_param_opt = self.Single_Parameter_Optimizer(self.history)
-        self.multi_param_opt = self.Multiple_Parameter_Optimizer(self.history)
-        # self.refresh_data()
-    
+        
+        # TODO: check db first before calculating
+        if self.check_exists_in_db():
+            self.read_from_db()
+        else:
+            self.single_param_opt = self.Single_Parameter_Optimizer(self.history)
+            self.multi_param_opt = self.Multiple_Parameter_Optimizer(self.history)
+            self.write_to_db()
+            self.read_from_db()
+
     def create_db_connection(self):
         conn = psycopg2.connect("dbname=stock_app user=ksmith")
         cur = conn.cursor()
@@ -38,6 +44,41 @@ class Optimized_Symbol:
     def close_db_connection(self, conn, cur):
         cur.close()
         conn.close()
+        
+    def check_exists_in_db(self):
+        query = f'''
+        SELECT symbol_id FROM optimum_symbol_parameters
+        WHERE symbol = '{self.symbol}';
+        '''
+        conn, cur = self.create_db_connection()
+        cur.execute(query)
+        if len(cur.fetchall()) == 0:
+            self.close_db_connection(conn,cur)
+            return False
+        else:
+            self.close_db_connection(conn,cur)
+            return True
+        
+    def read_from_db(self):
+        query = f'''
+        SELECT * FROM optimum_symbol_parameters
+        WHERE symbol = '{self.symbol}';
+        '''
+        conn, cur = self.create_db_connection()
+        cur.execute(query)
+        params = cur.fetchall()
+        self.last_updated = params[0][2]
+        self.calc_period = params[0][3]
+        self.single_param_optimum_window = params[0][4]
+        self.single_param_optimum_multiple = params[0][5]
+        self.multi_param_optimum_window_1 = params[0][6]
+        self.multi_param_optimum_window_2 = params[0][7]
+        self.multi_param_optimum_multiple = params[0][8]
+        self.organic_growth = params[0][9]
+        self.close_db_connection(conn, cur)
+        # return params
+        
+        
     
     def write_to_db(self):
         """
