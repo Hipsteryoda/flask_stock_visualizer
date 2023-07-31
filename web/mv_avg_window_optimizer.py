@@ -241,7 +241,7 @@ class Optimized_Symbol:
         def optimize_window(self):
             calcs = {}
             # calculate all moving average windows inside of a year in one day steps
-            for n in range(1, 366):
+            for n in range(5, 366, 5):
                 calcs[n] = self.backtest(self.df, n)
                 
             calcs_series = pd.Series(calcs)
@@ -309,6 +309,7 @@ class Optimized_Symbol:
                 two_param_calcs_df.loc[n, m] = self.two_backtest(self.df, n, m)
                 
             two_param_calcs_df.fillna(0, inplace=True)
-            optimum_windows = two_param_calcs_df[two_param_calcs_df.max(axis=0).idxmax()].idxmax(), two_param_calcs_df.max(axis=0).idxmax()
+            # axis 0 looks for the idxmax for n, axis 1 looks for the idxmax of m
+            optimum_windows = two_param_calcs_df.max(axis=0).idxmax(), two_param_calcs_df.max(axis=1).idxmax()
             optimized_multiple = two_param_calcs_df.loc[optimum_windows[0], optimum_windows[1]]
             return optimum_windows, optimized_multiple
