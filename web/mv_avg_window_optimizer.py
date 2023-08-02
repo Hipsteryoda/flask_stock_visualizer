@@ -151,6 +151,8 @@ class Optimized_Symbol:
         ma_df['single_sma'] = ma_df.Close.rolling(single_sma).mean()
         ma_df['multi_sma_1'] = ma_df.Close.rolling(multi_sma_1).mean()
         ma_df['multi_sma_2'] = ma_df.Close.rolling(multi_sma_2).mean()
+        # if Close > single_sma, in_position = True; else in_position = False
+        ma_df['in_position'] = np.where(ma_df['Close'] > ma_df['single_sma'], True, False)
         return ma_df
     
     def plot_custom_ma(self):

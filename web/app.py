@@ -84,9 +84,29 @@ def read_optimization_params(symbol):
     close_psql_db_connection(conn, cur)
     return facts_table
     
-# def refresh_opts(symbol):
-#     period = '12mo'
-#     post_optimization_params(symbol, period)
+def read_top_100_sma(sort_by='single'):
+    '''
+    Reads the top 100 stocks sorted by return multiple
+    '''
+    conn, cur = create_psql_db_connection()
+    valid_sort_by = ['single', 'multi']
+    if sort_by not in valid_sort_by:
+        raise ValueError(f"Expected 'single' or 'multi'; got {sort_by}")
+    
+    query = """
+    SELECT * FROM optimum_symbol_parameters
+    ORDER BY single_param_optimum_multiple DESC
+    LIMIT 100; 
+    """
+    
+    cur.execute(query)
+    table = pd.DataFrame(data=cur.fetchall(),
+                         columns=['symbol_id','symbol','last_updated','calc_period',
+                         'single_param_optimum_window','single_param_optimum_multiple',
+                         'multi_param_optimum_window_1','multi_param_optimum_window_2',
+                         'multi_param_optimum_multiple','organic_growth'])
+    close_psql_db_connection(conn, cur)
+    return table
     
 
 ######################################################################### 
@@ -190,3 +210,17 @@ def data():
                            tables=[bol_df.to_html(classes='data')], 
                            titles=bol_df.columns.values)
 
+
+
+@app.route('/top_100_single_sma')
+def top_100_single_sma():
+    table = read_top_100_sma()
+    table.set_index('symbol_id', inplace=True)
+
+    link_frmt = lambda x: f'<a href="showLineChart/{x}">{x}</a>'
+    hdr_frmt = f'<th onclick="something"></th>'
+    
+    return render_template('top_100_single_sma.html',
+                           table=table.to_html(formatters={'symbol':link_frmt},
+                                               escape=False,
+                                               index=False))
