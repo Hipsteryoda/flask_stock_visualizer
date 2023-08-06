@@ -115,6 +115,13 @@ def read_top_100_sma(sort_by='single'):
 def root():
     return redirect(url_for("home"))
 
+@app.route("/index")
+def index():
+    return(render_template('index.html',
+           title='YOUR TITLE HERE!'
+           )
+           )
+
 @app.route("/home")
 def home():
     # bol_df = read_bol_df()
@@ -136,7 +143,8 @@ def home():
                                         index=False)
                                ], 
                            values=today_results_df.columns.values,
-                           today=get_today()
+                           today=get_today(),
+                           title="Stock App"
                            )
 
 @app.route('/rebuild')
@@ -193,6 +201,7 @@ def showLineChart(symbol):
     graphJSON = json.dumps(trace, cls=plotly.utils.PlotlyJSONEncoder)
     
     return render_template('stock_page.html',
+                           title=symbol,
                            graphJSON=graphJSON,
                            symbol=symbol,
                            link_dict=link_dict,
@@ -208,9 +217,8 @@ def data():
     bol_df = read_bol_df()
     return render_template('dataset.html',  
                            tables=[bol_df.to_html(classes='data')], 
-                           titles=bol_df.columns.values)
-
-
+                           titles=bol_df.columns.values,
+                           title="All Data")
 
 @app.route('/top_100_single_sma')
 def top_100_single_sma():
@@ -223,4 +231,5 @@ def top_100_single_sma():
     return render_template('top_100_single_sma.html',
                            table=table.to_html(formatters={'symbol':link_frmt},
                                                escape=False,
-                                               index=False))
+                                               index=False),
+                           title='Top 100 Single SMA')

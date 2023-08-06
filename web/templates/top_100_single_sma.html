@@ -1,83 +1,9 @@
-<!doctype html>
-<html>
-    <head>
-        <style>
-          body            { font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;}
-          a, h1, h2       { color: #377ba8; }
-          h1, h2          { margin: 0; }
-          h1              { border-bottom: 2px solid #eee; }
-          h2              { font-size: 1.2em; }
-      
-          table.dataframe, .dataframe th, .dataframe td {
-            border: none;
-            border-bottom: 1px solid #C8C8C8;
-            border-collapse: collapse;
-            text-align:left;
-            padding: 10px;
-            margin-bottom: 40px;
-            font-size: 0.9em;
-            margin-left: auto; 
-            margin-right: auto;
-          }
-    
-          table.center {
-            margin-left: auto; 
-            margin-right: auto;
-          }
-      
-          .male th {
-              background-color: #add8e6;
-              color: white;
-          }
-      
-          .female th {
-              background-color: #77dd77;
-              color: white;
-          }
-      
-          tr:nth-child(odd)		{ background-color:#eee; }
-          tr:nth-child(even)	{ background-color:#fff; }
-      
-          tr:hover            { background-color: #ffff99;}
-        </style>
-          <nav class="navbar navbar-expand-lg bg-body-tertiary">
-              <div class="container-fluid">
-                <a class="navbar-brand" href="#">Navbar</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                  <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                  <ul class="navbar-nav">
-                    <li class="nav-item">
-                      <a class="nav-link active" aria-current="page" href="{{ url_for('home') }}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link" href="{{ url_for('data') }}">Full Data</a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link" href="{{ url_for('rebuild') }}">Refresh Data</a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link disabled">Disabled</a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </nav>
-      
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1">
-            <title>{{ symbol }}</title>
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-          
-      </head>
-<body>
-    <body>
-        <h2 style='font-weight: bold'>Top 100 SMA Multiples</h2>
-    
-            <div class="container">
-                {{ table | safe }}
-            </div>
-            {% block scripts %}{% endblock %}
-    </body>
-</body>
+{% extends "index.html" %}
+
+{% block content %}
+  <h2 style='font-weight: bold'>Top 100 SMA Multiples</h2>
+  <div class="container">
+    {{ table | safe }}
+  </div>
+  {% block scripts %}{% endblock %}
+{% endblock %}
