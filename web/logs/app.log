@@ -141,3 +141,72 @@ werkzeug - INFO -  * Detected change in '/home/ksmith/birds/stock_stuff/web/app.
 werkzeug - INFO -  * Restarting with stat
 2023-08-12 14:47:04,270: werkzeug - WARNING -  * Debugger is active!
 2023-08-12 14:47:04,270: werkzeug - INFO -  * Debugger PIN: 871-619-424
+2023-08-12 15:00:13,681: werkzeug - INFO -  * Detected change in '/home/ksmith/birds/stock_stuff/web/mv_avg_window_optimizer.py', reloading
+werkzeug - INFO -  * Restarting with stat
+2023-08-12 15:00:14,686: werkzeug - WARNING -  * Debugger is active!
+2023-08-12 15:00:14,687: werkzeug - INFO -  * Debugger PIN: 871-619-424
+2023-08-12 15:00:22,279: root - INFO - Symbol SAGE exists in the table optimized_symbol_parameters
+2023-08-12 15:00:22,282: root - INFO - Symbol details read from optimized_symbol_parameters
+2023-08-12 15:00:22,282: root - INFO - Updating optimized parameters for symbol SAGE
+2023-08-12 15:00:22,284: werkzeug - INFO - 127.0.0.1 - - [12/Aug/2023 15:00:22] "[35m[1mGET /optimization_refresh/SAGE HTTP/1.1[0m" 500 -
+2023-08-12 15:00:22,310: werkzeug - INFO - 127.0.0.1 - - [12/Aug/2023 15:00:22] "[36mGET /optimization_refresh/SAGE?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2023-08-12 15:00:22,311: werkzeug - INFO - 127.0.0.1 - - [12/Aug/2023 15:00:22] "[36mGET /optimization_refresh/SAGE?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2023-08-12 15:00:22,318: werkzeug - INFO - 127.0.0.1 - - [12/Aug/2023 15:00:22] "[36mGET /optimization_refresh/SAGE?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2023-08-12 15:00:22,330: werkzeug - INFO - 127.0.0.1 - - [12/Aug/2023 15:00:22] "[36mGET /optimization_refresh/SAGE?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2023-08-12 15:00:45,239: werkzeug - INFO -  * Detected change in '/home/ksmith/birds/stock_stuff/web/mv_avg_window_optimizer.py', reloading
+werkzeug - INFO -  * Restarting with stat
+2023-08-12 15:00:46,266: werkzeug - WARNING -  * Debugger is active!
+2023-08-12 15:00:46,267: werkzeug - INFO -  * Debugger PIN: 871-619-424
+2023-08-12 15:00:48,792: root - INFO - Symbol SAGE exists in the table optimized_symbol_parameters
+2023-08-12 15:00:48,795: root - INFO - Symbol details read from optimized_symbol_parameters
+2023-08-12 15:00:48,795: root - INFO - Updating optimized parameters for symbol SAGE
+2023-08-12 15:00:48,798: werkzeug - INFO - 127.0.0.1 - - [12/Aug/2023 15:00:48] "[35m[1mGET /optimization_refresh/SAGE HTTP/1.1[0m" 500 -
+2023-08-12 15:00:48,819: werkzeug - INFO - 127.0.0.1 - - [12/Aug/2023 15:00:48] "[36mGET /optimization_refresh/SAGE?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2023-08-12 15:00:48,821: werkzeug - INFO - 127.0.0.1 - - [12/Aug/2023 15:00:48] "[36mGET /optimization_refresh/SAGE?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2023-08-12 15:00:48,830: werkzeug - INFO - 127.0.0.1 - - [12/Aug/2023 15:00:48] "[36mGET /optimization_refresh/SAGE?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2023-08-12 15:00:48,839: werkzeug - INFO - 127.0.0.1 - - [12/Aug/2023 15:00:48] "[36mGET /optimization_refresh/SAGE?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2023-08-12 15:00:56,459: werkzeug - INFO -  * Detected change in '/home/ksmith/birds/stock_stuff/web/mv_avg_window_optimizer.py', reloading
+werkzeug - INFO -  * Restarting with stat
+2023-08-12 15:00:57,494: werkzeug - WARNING -  * Debugger is active!
+2023-08-12 15:00:57,494: werkzeug - INFO -  * Debugger PIN: 871-619-424
+2023-08-12 15:01:01,343: root - INFO - Symbol SAGE exists in the table optimized_symbol_parameters
+2023-08-12 15:01:01,345: root - INFO - Symbol details read from optimized_symbol_parameters
+2023-08-12 15:01:01,346: root - INFO - Updating optimized parameters for symbol SAGE
+2023-08-12 15:01:01,348: werkzeug - INFO - 127.0.0.1 - - [12/Aug/2023 15:01:01] "[35m[1mGET /optimization_refresh/SAGE HTTP/1.1[0m" 500 -
+2023-08-12 15:01:01,371: werkzeug - INFO - 127.0.0.1 - - [12/Aug/2023 15:01:01] "[36mGET /optimization_refresh/SAGE?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2023-08-12 15:01:01,372: werkzeug - INFO - 127.0.0.1 - - [12/Aug/2023 15:01:01] "[36mGET /optimization_refresh/SAGE?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2023-08-12 15:01:01,384: werkzeug - INFO - 127.0.0.1 - - [12/Aug/2023 15:01:01] "[36mGET /optimization_refresh/SAGE?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2023-08-12 15:01:01,392: werkzeug - INFO - 127.0.0.1 - - [12/Aug/2023 15:01:01] "[36mGET /optimization_refresh/SAGE?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2023-08-12 15:01:42,245: werkzeug - INFO -  * Detected change in '/home/ksmith/birds/stock_stuff/web/mv_avg_window_optimizer.py', reloading
+werkzeug - INFO -  * Restarting with stat
+2023-08-12 15:01:43,287: werkzeug - WARNING -  * Debugger is active!
+2023-08-12 15:01:43,287: werkzeug - INFO -  * Debugger PIN: 871-619-424
+2023-08-12 15:01:49,927: root - INFO - Symbol SAGE exists in the table optimized_symbol_parameters
+2023-08-12 15:01:49,930: root - INFO - Symbol details read from optimized_symbol_parameters
+2023-08-12 15:01:49,930: root - INFO - Updating optimized parameters for symbol SAGE
+2023-08-12 15:01:49,933: werkzeug - INFO - 127.0.0.1 - - [12/Aug/2023 15:01:49] "[35m[1mGET /optimization_refresh/SAGE HTTP/1.1[0m" 500 -
+2023-08-12 15:01:49,959: werkzeug - INFO - 127.0.0.1 - - [12/Aug/2023 15:01:49] "[36mGET /optimization_refresh/SAGE?__debugger__=yes&cmd=resource&f=style.css HTTP/1.1[0m" 304 -
+2023-08-12 15:01:49,960: werkzeug - INFO - 127.0.0.1 - - [12/Aug/2023 15:01:49] "[36mGET /optimization_refresh/SAGE?__debugger__=yes&cmd=resource&f=debugger.js HTTP/1.1[0m" 304 -
+2023-08-12 15:01:49,969: werkzeug - INFO - 127.0.0.1 - - [12/Aug/2023 15:01:49] "[36mGET /optimization_refresh/SAGE?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2023-08-12 15:01:49,978: werkzeug - INFO - 127.0.0.1 - - [12/Aug/2023 15:01:49] "[36mGET /optimization_refresh/SAGE?__debugger__=yes&cmd=resource&f=console.png HTTP/1.1[0m" 304 -
+2023-08-12 15:05:57,108: werkzeug - INFO -  * Detected change in '/home/ksmith/birds/stock_stuff/web/mv_avg_window_optimizer.py', reloading
+werkzeug - INFO -  * Restarting with stat
+2023-08-12 15:05:58,139: werkzeug - WARNING -  * Debugger is active!
+2023-08-12 15:05:58,139: werkzeug - INFO -  * Debugger PIN: 871-619-424
+2023-08-12 15:06:07,668: root - INFO - Symbol AAIC exists in the table optimized_symbol_parameters
+2023-08-12 15:06:07,671: root - INFO - Symbol details read from optimized_symbol_parameters
+2023-08-12 15:06:07,710: werkzeug - INFO - 127.0.0.1 - - [12/Aug/2023 15:06:07] "GET /showLineChart/AAIC HTTP/1.1" 200 -
+2023-08-12 15:06:11,060: root - INFO - Symbol AAIC exists in the table optimized_symbol_parameters
+2023-08-12 15:06:11,062: root - INFO - Symbol details read from optimized_symbol_parameters
+2023-08-12 15:06:11,062: root - INFO - Updating optimized parameters for symbol AAIC
+2023-08-12 15:06:50,180: werkzeug - INFO - 127.0.0.1 - - [12/Aug/2023 15:06:50] "[32mGET /optimization_refresh/AAIC HTTP/1.1[0m" 302 -
+2023-08-12 15:06:51,861: root - INFO - Symbol AAIC exists in the table optimized_symbol_parameters
+2023-08-12 15:06:51,864: root - INFO - Symbol details read from optimized_symbol_parameters
+2023-08-12 15:06:51,892: werkzeug - INFO - 127.0.0.1 - - [12/Aug/2023 15:06:51] "GET /showLineChart/AAIC HTTP/1.1" 200 -
+2023-08-12 15:07:22,472: werkzeug - INFO - 127.0.0.1 - - [12/Aug/2023 15:07:22] "GET /home HTTP/1.1" 200 -
+2023-08-12 15:07:41,563: root - INFO - Symbol INOD exists in the table optimized_symbol_parameters
+2023-08-12 15:07:41,566: root - INFO - Symbol details read from optimized_symbol_parameters
+2023-08-12 15:07:41,594: werkzeug - INFO - 127.0.0.1 - - [12/Aug/2023 15:07:41] "GET /showLineChart/INOD HTTP/1.1" 200 -
+2023-08-12 15:08:25,326: root - INFO - Symbol KRT exists in the table optimized_symbol_parameters
+2023-08-12 15:08:25,328: root - INFO - Symbol details read from optimized_symbol_parameters
+2023-08-12 15:08:25,353: werkzeug - INFO - 127.0.0.1 - - [12/Aug/2023 15:08:25] "GET /showLineChart/KRT HTTP/1.1" 200 -
