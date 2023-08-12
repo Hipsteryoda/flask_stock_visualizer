@@ -168,6 +168,7 @@ class Optimized_Symbol:
         single_param_optimum_window = results[0][0]
         multi_param_optimum_window_1 = results[0][1]
         multi_param_optimum_window_2 = results[0][2]
+        # exp_ma_optimum_window = results[0][3]
         calc_period = results[0][3]
         
         # reused from mv_avg_window_optimizer.Multiple_Parameter_Optimizer.two_ma_calc()
@@ -320,6 +321,7 @@ class Optimized_Symbol:
             self.df = add_lag_price(df)
             self.opts = self.optimize()
             self.optimum_window = self.opts[0]
+            self.optimum_multiple = self.opts[1]
             self.organic_growth = (df.Close.pct_change()+1).prod()
 
         def ema_calc(self, n):
