@@ -146,20 +146,21 @@ class Optimized_Symbol:
         ## Uncomment to automatically write to database
         # self.write_to_db()
     
-    def two_ma_calc(self, single_sma, multi_sma_1, multi_sma_2) -> pd.DataFrame:
-        ma_df = self.history.copy()
-        ma_df['single_sma'] = ma_df.Close.rolling(single_sma).mean()
-        ma_df['multi_sma_1'] = ma_df.Close.rolling(multi_sma_1).mean()
-        ma_df['multi_sma_2'] = ma_df.Close.rolling(multi_sma_2).mean()
+    def two_ma_calc(self, single_sma, multi_sma_1, multi_sma_2, exp_ma) -> pd.DataFrame:
+        ma_df = add_lag_price(self.history.copy())
+        ma_df['single_sma'] = ma_df.price.rolling(single_sma).mean()
+        ma_df['multi_sma_1'] = ma_df.price.rolling(multi_sma_1).mean()
+        ma_df['multi_sma_2'] = ma_df.price.rolling(multi_sma_2).mean()
+        ma_df['exp_ma'] = ma_df.price.ewm(span=exp_ma, adjust=False).mean()
         # if Close > single_sma, in_position = True; else in_position = False
-        ma_df['in_position'] = np.where(ma_df['Close'] > ma_df['single_sma'], True, False)
+        ma_df['in_position'] = np.where(ma_df['price'] > ma_df['single_sma'], True, False)
         return ma_df
     
     def plot_custom_ma(self):
         # get single, multi_1, and multi_2 params for symbol from db
         conn, cur = self.create_db_connection()
         query = f'''
-        SELECT single_param_optimum_window, multi_param_optimum_window_1, multi_param_optimum_window_2, calc_period
+        SELECT single_param_optimum_window, multi_param_optimum_window_1, multi_param_optimum_window_2, exp_ma_optimum_window, calc_period
         FROM optimum_symbol_parameters
         WHERE symbol = '{self.symbol}';
         '''
@@ -168,11 +169,11 @@ class Optimized_Symbol:
         single_param_optimum_window = results[0][0]
         multi_param_optimum_window_1 = results[0][1]
         multi_param_optimum_window_2 = results[0][2]
-        # exp_ma_optimum_window = results[0][3]
-        calc_period = results[0][3]
+        exp_ma_optimum_window = results[0][3]
+        calc_period = results[0][4]
         
         # reused from mv_avg_window_optimizer.Multiple_Parameter_Optimizer.two_ma_calc()
-        ma_df = self.two_ma_calc(single_param_optimum_window, multi_param_optimum_window_1, multi_param_optimum_window_2)
+        ma_df = self.two_ma_calc(single_param_optimum_window, multi_param_optimum_window_1, multi_param_optimum_window_2, exp_ma_optimum_window)
         
         # plot the stuff
         x_axis=ma_df.index
@@ -192,6 +193,10 @@ class Optimized_Symbol:
         fig.add_trace(
             go.Scatter(x=x_axis, y=ma_df['multi_sma_2'], 
                         name=f'{multi_param_optimum_window_2} Day Moving Average (multi_2)')
+        )
+        fig.add_trace(
+            go.Scatter(x=x_axis, y=ma_df['exp_ma'],
+                       name=f'{exp_ma_optimum_window} Day Exp. Moving Average (exp_ma)')
         )
         # fig.show()
         

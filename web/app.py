@@ -80,7 +80,8 @@ def read_optimization_params(symbol):
                                columns=['symbol_id','symbol','last_updated','calc_period',
                                         'single_param_optimum_window','single_param_optimum_multiple',
                                         'multi_param_optimum_window_1','multi_param_optimum_window_2',
-                                        'multi_param_optimum_multiple','organic_growth'])
+                                        'multi_param_optimum_multiple','organic_growth', 'exp_ma_optimum_window',
+                                        'exp_ma_optimum_multiple'])
     close_psql_db_connection(conn, cur)
     return facts_table
     
