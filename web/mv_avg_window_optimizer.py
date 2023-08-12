@@ -15,6 +15,10 @@ import plotly.graph_objects as go
 # Other
 from datetime import datetime
 
+import logging
+
+logging.basicConfig(level=logging.INFO, filename='logs/app.log', filemode='a', format='%(asctime)s: %(name)s - %(levelname)s - %(message)s')
+
 ##################################
 
 def add_lag_price(df):
@@ -23,14 +27,18 @@ def add_lag_price(df):
 
 class Optimized_Symbol:
     def __init__(self, symbol, period="12mo"):
+        logging.debug(f'Instantiating Optimized_Symbol with values: symbol={symbol}, period={period}')
         self.symbol = symbol.upper()
         self.calc_period = period
         self.history = yf.Ticker(self.symbol).history(period=period)
         
         # TODO: check db first before calculating
         if self.check_exists_in_db():
+            logging.info(f'Symbol {self.symbol} exists in the table optimized_symbol_parameters')
             self.read_from_db()
+            logging.info('Symbol details read from optimized_symbol_parameters')
         else:
+            logging.debug(f'Calculating optimized parameters for new symbol {self.symbol}')
             self.single_param_opt = self.Single_Parameter_Optimizer(self.history)
             self.multi_param_opt = self.Multiple_Parameter_Optimizer(self.history)
             self.exp_ma_opt = self.Exponential_Moving_Average_Optimizer(self.history)
@@ -38,6 +46,7 @@ class Optimized_Symbol:
             self.read_from_db()
             
     def refresh(self):
+        logging.info(f'Updating optimized parameters for symbol {self.symbol}')
         self.single_param_opt = self.Single_Parameter_Optimizer(self.history)
         self.multi_param_opt = self.Multiple_Parameter_Optimizer(self.history)
         self.exp_ma_opt = self.Exponential_Moving_Average_Optimizer(self.history)
@@ -61,6 +70,7 @@ class Optimized_Symbol:
         conn, cur = self.create_db_connection()
         cur.execute(query)
         if len(cur.fetchall()) == 0:
+            logging.info(f'Symbol {self.symbol} does not exist in table optimized_symbol_parameters')
             self.close_db_connection(conn,cur)
             return False
         else:

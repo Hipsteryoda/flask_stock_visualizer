@@ -9,6 +9,10 @@ import os
 from datetime import datetime, date, time
 from mv_avg_window_optimizer import Optimized_Symbol
 
+import logging
+
+logging.basicConfig(level=logging.INFO, filename='logs/app.log', filemode='a', format='%(asctime)s: %(name)s - %(levelname)s - %(message)s')
+
 app = Flask(__name__)
 
 ########################################################################
@@ -116,6 +120,7 @@ def read_top_100_sma(sort_by='single'):
 
 @app.route("/")
 def root():
+    logging.debug('Redirecting from root (/) to home (/home)')
     return redirect(url_for("home"))
 
 @app.route("/index")
