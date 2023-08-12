@@ -33,8 +33,16 @@ class Optimized_Symbol:
         else:
             self.single_param_opt = self.Single_Parameter_Optimizer(self.history)
             self.multi_param_opt = self.Multiple_Parameter_Optimizer(self.history)
+            self.exp_ma_opt = self.Exponential_Moving_Average_Optimizer(self.history)
             self.write_to_db()
             self.read_from_db()
+            
+    def refresh(self):
+        self.single_param_opt = self.Single_Parameter_Optimizer(self.history)
+        self.multi_param_opt = self.Multiple_Parameter_Optimizer(self.history)
+        self.exp_ma_opt = self.Exponential_Moving_Average_Optimizer(self.history)
+        self.write_to_db()
+        self.read_from_db()
 
     def create_db_connection(self):
         conn = psycopg2.connect("dbname=stock_app user=ksmith")
@@ -75,6 +83,8 @@ class Optimized_Symbol:
         self.multi_param_optimum_window_2 = params[0][7]
         self.multi_param_optimum_multiple = params[0][8]
         self.organic_growth = params[0][9]
+        self.exp_ma_optimum_window = params[0][10]
+        self.exp_ma_optimum_multiple = params[0][11]
         self.close_db_connection(conn, cur)
         # return params      
     
@@ -95,12 +105,13 @@ class Optimized_Symbol:
         (symbol, last_updated, calc_period, single_param_optimum_window,
         single_param_optimum_multiple, multi_param_optimum_window_1,
         multi_param_optimum_window_2, multi_param_optimum_multiple,
-        organic_growth)
+        organic_growth, exp_ma_optimum_window, exp_ma_optimum_multiple)
         VALUES
         ('{self.symbol.upper()}', '{datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f")}',
         '{period}', {self.single_param_opt.optimum_window}, {self.single_param_opt.optimum_multiple},
         {self.multi_param_opt.optimum_window_1}, {self.multi_param_opt.optimum_window_2},
-        {self.multi_param_opt.optimum_multiple}, {self.single_param_opt.organic_growth})
+        {self.multi_param_opt.optimum_multiple}, {self.single_param_opt.organic_growth},
+        {self.exp_ma_opt.optimum_window}, {self.exp_ma_opt.optimum_multiple})
         '''
         update_query = f'''
         UPDATE optimum_symbol_parameters
@@ -111,7 +122,9 @@ class Optimized_Symbol:
         multi_param_optimum_window_1={self.multi_param_opt.optimum_window_1},
         multi_param_optimum_window_2={self.multi_param_opt.optimum_window_2},
         multi_param_optimum_multiple={self.multi_param_opt.optimum_multiple},
-        organic_growth={self.single_param_opt.organic_growth}
+        organic_growth={self.single_param_opt.organic_growth},
+        exp_ma_optimum_window={self.exp_ma_opt.optimum_window},
+        exp_ma_optimum_multiple={self.exp_ma_opt.optimum_multiple}
         WHERE symbol = '{self.symbol}';'''
         
         select_query = f'''

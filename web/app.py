@@ -47,22 +47,24 @@ def get_summarized_articles():
     
     return ''
 
-def post_optimization_params(symbol, period):
-        single_opts = Optimized_Symbol.Single_Parameter_Optimizer(analysis.get_history(symbol, period))
-        two_opts = Optimized_Symbol.Multiple_Parameter_Optimizer(analysis.get_history(symbol, period))
-        payload = pd.DataFrame({'symbol':symbol,
-                                'datetime':datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f"),
-                                'opt_single_ma_window':single_opts.optimum_window,
-                                'opt_single_multiple':single_opts.optimum_multiple,
-                                'opt_two_ma_window_1':two_opts.optimum_window_1,
-                                'opt_two_ma_window_2':two_opts.optimum_window_2,
-                                'opt_two_multiple':two_opts.optimum_multiple,
-                                'organic_growth':single_opts.organic_growth},
-                               index=[0])
-        payload.to_sql('symbol_param_optimized',
-                       con=get_db_connection(),
-                       if_exists='append',
-                       index=False)
+# def post_optimization_params(symbol):
+#     # single_opts = Optimized_Symbol.Single_Parameter_Optimizer(analysis.get_history(symbol, period))
+#     # two_opts = Optimized_Symbol.Multiple_Parameter_Optimizer(analysis.get_history(symbol, period))
+#     # payload = pd.DataFrame({'symbol':symbol,
+#     #                         'datetime':datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f"),
+#     #                         'opt_single_ma_window':single_opts.optimum_window,
+#     #                         'opt_single_multiple':single_opts.optimum_multiple,
+#     #                         'opt_two_ma_window_1':two_opts.optimum_window_1,
+#     #                         'opt_two_ma_window_2':two_opts.optimum_window_2,
+#     #                         'opt_two_multiple':two_opts.optimum_multiple,
+#     #                         'organic_growth':single_opts.organic_growth},
+#     #                        index=[0])
+#     # payload.to_sql('symbol_param_optimized',
+#     #                con=get_db_connection(),
+#     #                if_exists='append',
+#     #                index=False)
+#     Optimized_Symbol(symbol).refresh()
+        
 
 def read_optimization_params(symbol):
     # retrieve latest info from db for parameter optimization
@@ -175,9 +177,9 @@ def rebuild():
 
 @app.route("/optimization_refresh/<symbol>")
 def optimization_refresh(symbol):
-    post_optimization_params(symbol, '12mo')
+    Optimized_Symbol(symbol).refresh()
     # refresh_opts(symbol)
-    # return redirect('/showLineChart/' + symbol)
+    return redirect('/showLineChart/' + symbol)
 
 @app.route("/showLineChart/<symbol>")
 def showLineChart(symbol):

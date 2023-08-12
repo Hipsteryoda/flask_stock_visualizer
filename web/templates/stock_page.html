@@ -20,7 +20,7 @@
   {% endfor %}
   </ul>
 </div>
-<a href={{ url_for('showLineChart', symbol=symbol) }}><input type="button" value="Refresh"></a>
+<a href={{ url_for('optimization_refresh', symbol=symbol) }}><input type="button" value="Refresh Data"></a>
 <div>
   {{ facts_table | safe }}
 </div>
