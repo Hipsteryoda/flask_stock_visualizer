@@ -254,7 +254,6 @@ class Optimized_Symbol:
             opt = (maxidx, maxval)
             return opt
             
-
     class Multiple_Parameter_Optimizer:
         def __init__(self, df):
             self.df = add_lag_price(df)
@@ -315,3 +314,55 @@ class Optimized_Symbol:
             optimum_windows = two_param_calcs_df.max(axis=0).idxmax(), two_param_calcs_df.max(axis=1).idxmax()
             optimized_multiple = two_param_calcs_df.loc[optimum_windows[0], optimum_windows[1]]
             return optimum_windows, optimized_multiple
+        
+    class Exponential_Moving_Average_Optimizer:
+        def __init__(self, df):
+            self.df = add_lag_price(df)
+            self.opts = self.optimize()
+            self.optimum_window = self.opts[0]
+            self.organic_growth = (df.Close.pct_change()+1).prod()
+
+        def ema_calc(self, n):
+            # calculate ewm on Price
+            self.df['exp_ma'] = self.df['price'].ewm(span=n, adjust=False).mean()
+            
+
+        def backtest(self, df, n, how='multiple'):
+            self.ema_calc(n)
+            in_position = False
+            
+            profits = []
+            
+            for index, row in df.iterrows():
+                if not in_position:
+                    if row['exp_ma'] > row['price']:
+                        buyprice = row.price
+                        in_position = True
+                        
+                if in_position:
+                    if row['exp_ma'] < row['price']:
+                        # calculate relative profit
+                        profit = (row.price - buyprice)/buyprice
+                        profits.append(profit)
+                        in_position = False
+
+            if how == 'multiple':
+                # returns a number that is a multiplier of your capital
+                overall_profit = (pd.Series(profits) + 1).prod()
+            if how == 'percentage':
+                overall_profit = (((pd.Series(profits) + 1).prod())-1)*100
+            return overall_profit
+
+        def optimize(self):
+            calcs = {}
+            # calculate all moving average windows inside of a year in one day steps
+            for n in range(5, 366, 5):
+                calcs[n] = self.backtest(self.df, n)
+                
+            calcs_series = pd.Series(calcs)
+            
+            # calculate the optimum window and what the multiple of initial capital would be
+            maxidx = calcs_series.idxmax()
+            maxval = calcs_series.loc[maxidx]
+            opt = (maxidx, maxval)
+            return opt
