@@ -56,11 +56,14 @@ class Optimized_Symbol:
     def create_db_connection(self):
         conn = psycopg2.connect("dbname=stock_app user=ksmith")
         cur = conn.cursor()
+        logging.debug("Created connection and cursor for: dbname=stock_app user=ksmith")
         return conn, cur
 
     def close_db_connection(self, conn, cur):
         cur.close()
         conn.close()
+        logging.debug("Closed cursor and connection to database")
+        
         
     def check_exists_in_db(self):
         query = f'''
