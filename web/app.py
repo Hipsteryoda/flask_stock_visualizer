@@ -26,7 +26,7 @@ def get_db_connection():
     return conn
 
 def create_psql_db_connection():
-    conn = psycopg2.connect("dbname=stock_app user=ksmith")
+    conn = psycopg2.connect("dbname=stock_app user=stock_app")
     cur = conn.cursor()
     return conn, cur
 

@@ -21,7 +21,7 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- Name: optimum_symbol_parameters; Type: TABLE; Schema: public; Owner: ksmith
+-- Name: optimum_symbol_parameters; Type: TABLE; Schema: public; Owner: stock_app
 --
 
 CREATE TABLE public.optimum_symbol_parameters (
@@ -34,14 +34,16 @@ CREATE TABLE public.optimum_symbol_parameters (
     multi_param_optimum_window_1 integer,
     multi_param_optimum_window_2 integer,
     multi_param_optimum_multiple numeric,
-    organic_growth numeric
+    organic_growth numeric,
+    exp_ma_optimum_window integer,
+    exp_ma_optimum_multiple numeric
 );
 
 
-ALTER TABLE public.optimum_symbol_parameters OWNER TO ksmith;
+ALTER TABLE public.optimum_symbol_parameters OWNER TO stock_app;
 
 --
--- Name: optimum_symbol_parameters_symbol_id_seq; Type: SEQUENCE; Schema: public; Owner: ksmith
+-- Name: optimum_symbol_parameters_symbol_id_seq; Type: SEQUENCE; Schema: public; Owner: stock_app
 --
 
 CREATE SEQUENCE public.optimum_symbol_parameters_symbol_id_seq
@@ -53,17 +55,17 @@ CREATE SEQUENCE public.optimum_symbol_parameters_symbol_id_seq
     CACHE 1;
 
 
-ALTER TABLE public.optimum_symbol_parameters_symbol_id_seq OWNER TO ksmith;
+ALTER TABLE public.optimum_symbol_parameters_symbol_id_seq OWNER TO stock_app;
 
 --
--- Name: optimum_symbol_parameters_symbol_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: ksmith
+-- Name: optimum_symbol_parameters_symbol_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: stock_app
 --
 
 ALTER SEQUENCE public.optimum_symbol_parameters_symbol_id_seq OWNED BY public.optimum_symbol_parameters.symbol_id;
 
 
 --
--- Name: optimum_symbol_parameters symbol_id; Type: DEFAULT; Schema: public; Owner: ksmith
+-- Name: optimum_symbol_parameters symbol_id; Type: DEFAULT; Schema: public; Owner: stock_app
 --
 
 ALTER TABLE ONLY public.optimum_symbol_parameters ALTER COLUMN symbol_id SET DEFAULT nextval('public.optimum_symbol_parameters_symbol_id_seq'::regclass);
