@@ -2,9 +2,11 @@
 
 {% block content %}
 <h1>All Data</h1>
+<div class="table-dark table-striped-columns">
 {% for table in tables %}
             {{titles[loop.index]}}
             {{ table|safe }}
 {% endfor %}
+</div>
 
 {% endblock %}

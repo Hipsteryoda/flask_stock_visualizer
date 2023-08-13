@@ -204,8 +204,7 @@ def showLineChart(symbol):
                            link_dict=link_dict,
                            refresh_opts=redirect('/optimization_refresh/' + symbol),
                            facts_table=facts_table.to_html(
-                               index=False,
-                               classes='center'
+                               index=False
                            ))
     
 @app.route('/data')
@@ -213,7 +212,7 @@ def data():
     conn = get_db_connection()
     bol_df = read_bol_df()
     return render_template('dataset.html',  
-                           tables=[bol_df.to_html(classes='data')], 
+                           tables=[bol_df.to_html()], 
                            titles=bol_df.columns.values,
                            title="All Data")
 
