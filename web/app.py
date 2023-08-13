@@ -58,11 +58,6 @@ def read_optimization_params(symbol):
     query = f'''
     SELECT * FROM optimum_symbol_parameters
     WHERE symbol = '{symbol}';'''
-    # conn = get_db_connection()
-    # facts_table = pd.read_sql_query(
-    #     sql=query,
-    #     con=conn
-    # )
     conn, cur = create_psql_db_connection()
     cur.execute(query)
     facts_table = pd.DataFrame(data=cur.fetchall(),
@@ -115,10 +110,6 @@ def index():
 
 @app.route("/home")
 def home():
-    # bol_df = read_bol_df()
-    # home_df = pd.DataFrame(bol_df['ticker'].unique())
-    # home_df.columns = ['Symbol']
-    
     today_results_df = read_today_results_df()
     link_frmt = lambda x: f'<a href="showLineChart/{x}">{x}</a>'
     hdr_frmt = f'<th onclick="something"></th>'
@@ -140,14 +131,6 @@ def home():
 
 @app.route('/rebuild')
 def rebuild():
-    # Get list of gainer stocks
-    # df = analysis.StockData().gainers_df
-    
-    # Assemble their history
-    # built_df = analysis.StockData().history_df
-
-    # Get moving average and bolinger bands
-    # ma_df = analysis.StockData.n_day_moving_average(built_df, 20)
     stockdata = analysis.StockData()
     bol_df = stockdata.bol_df
 
@@ -166,7 +149,6 @@ def rebuild():
 @app.route("/optimization_refresh/<symbol>")
 def optimization_refresh(symbol):
     Optimized_Symbol(symbol).refresh()
-    # refresh_opts(symbol)
     return redirect('/showLineChart/' + symbol)
 
 @app.route("/showLineChart/<symbol>")
