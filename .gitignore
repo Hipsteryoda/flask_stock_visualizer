@@ -8,3 +8,4 @@ web/*.ipynb
 docs/
 db/
 *.sql
+logs/

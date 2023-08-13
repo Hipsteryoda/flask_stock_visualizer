@@ -79,7 +79,10 @@ def read_top_100_sma(sort_by='single'):
         raise ValueError(f"Expected 'single' or 'multi'; got {sort_by}")
     
     query = """
-    SELECT * FROM optimum_symbol_parameters
+    SELECT symbol_id, symbol, last_updated, calc_period,
+    single_param_optimum_window, single_param_optimum_multiple, organic_growth 
+    FROM optimum_symbol_parameters
+    WHERE single_param_optimum_multiple IS NOT NULL
     ORDER BY single_param_optimum_multiple DESC
     LIMIT 100; 
     """
@@ -87,9 +90,30 @@ def read_top_100_sma(sort_by='single'):
     cur.execute(query)
     table = pd.DataFrame(data=cur.fetchall(),
                          columns=['symbol_id','symbol','last_updated','calc_period',
-                         'single_param_optimum_window','single_param_optimum_multiple',
-                         'multi_param_optimum_window_1','multi_param_optimum_window_2',
-                         'multi_param_optimum_multiple','organic_growth'])
+                         'single_param_optimum_window','single_param_optimum_multiple','organic_growth'])
+    close_psql_db_connection(conn, cur)
+    return table
+
+def read_top_100_exp_ma():
+    '''
+    Reads the top 100 stocks sorted by return multiple
+    '''
+    conn, cur = create_psql_db_connection()
+    
+    query = """
+    SELECT symbol_id, symbol, last_updated, calc_period,
+    exp_ma_optimum_window, exp_ma_optimum_multiple, organic_growth 
+    FROM optimum_symbol_parameters
+    WHERE exp_ma_optimum_multiple IS NOT NULL
+    ORDER BY exp_ma_optimum_multiple DESC
+    LIMIT 100; 
+    """
+    
+    cur.execute(query)
+    table = pd.DataFrame(data=cur.fetchall(),
+                         columns=['symbol_id','symbol','last_updated','calc_period',
+                                  'exp_ma_optimum_window', 'exp_ma_optimum_multiple'
+                                  ,'organic_growth'])
     close_psql_db_connection(conn, cur)
     return table
     
@@ -206,3 +230,17 @@ def top_100_single_sma():
                                                escape=False,
                                                index=False),
                            title='Top 100 Single SMA')
+
+@app.route('/top_100_exp_ma')
+def top_100_exp_ma():
+    table = read_top_100_exp_ma()
+    table.set_index('symbol_id', inplace=True)
+
+    link_frmt = lambda x: f'<a href="showLineChart/{x}">{x}</a>'
+    hdr_frmt = f'<th onclick="something"></th>'
+    
+    return render_template('top_100_exp_ma.html',
+                           table=table.to_html(formatters={'symbol':link_frmt},
+                                               escape=False,
+                                               index=False),
+                           title='Top 100 Exponential MA')
