@@ -61,11 +61,11 @@ def read_optimization_params(symbol):
     conn, cur = create_psql_db_connection()
     cur.execute(query)
     facts_table = pd.DataFrame(data=cur.fetchall(),
-                               columns=['symbol_id','symbol','last_updated','calc_period',
-                                        'single_param_optimum_window','single_param_optimum_multiple',
-                                        'multi_param_optimum_window_1','multi_param_optimum_window_2',
-                                        'multi_param_optimum_multiple','organic_growth', 'exp_ma_optimum_window',
-                                        'exp_ma_optimum_multiple'])
+                               columns=['ID','Symbol','Last Updated','Calc Period',
+                                        'Single SMA Optimum Window','Single SMA Optimum Multiple',
+                                        'Multi SMA Optimum Window 1','Multi SMA Optimum Window 2',
+                                        'Multi SMA Optimum Multiple','Organic Growth', 'Exponential MA Optimum Window',
+                                        'Exponential MA Optimum Multiple'])
     close_psql_db_connection(conn, cur)
     return facts_table
     
@@ -147,7 +147,7 @@ def home():
                                .to_html(formatters={'Symbol':link_frmt},
                                         escape=False,
                                         index=False)
-                               ], 
+                           ], 
                            values=today_results_df.columns.values,
                            today=get_today(),
                            title="Stock App"

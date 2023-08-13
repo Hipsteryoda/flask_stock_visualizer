@@ -1,43 +1,33 @@
 <!doctype html>
-<html>
+<html data-bs-theme="dark">
 <head>
   <style>
-    body            { font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;}
+    body { 
+      font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    }
     a               { color: #00ACC1}
     h1, h2          { 
       text-align: center; 
       font-weight: bold; 
-      color: #37474F !important;
     }
     h1              { border-bottom: 2px solid #eee; }
     h2              { font-size: 1.2em; }
 
-    table.dataframe, .dataframe th, .dataframe td {
-      border: none;
-      border-bottom: 1px solid #C8C8C8;
-      border-collapse: collapse;
-      text-align:left;
-      padding: 10px;
-      margin-bottom: 40px;
-      font-size: 0.9em;
+    table {
+      text-align: center;
+    }
+    
+    td {
+      text-align: center;
+      word-wrap: break-word;
+      min-width: 100px;
+      max-width: 160px;
     }
 
-    .male th {
-        background-color: #add8e6;
-        color: white;
-    }
+    tr:hover            { background-color: #519FB0;}
 
-    .female th {
-        background-color: #77dd77;
-        color: white;
-    }
-
-    tr:nth-child(odd)		{ background-color:#eee; }
-    tr:nth-child(even)	{ background-color:#fff; }
-
-    tr:hover            { background-color: #CFD8DC;}
   </style>
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #37474F">
+    <nav class="navbar navbar-expand-lg" style="background-color: #37474F">
         <div class="container-fluid">
           <a class="navbar-brand" href="#">
             <img src="https://cdn.pixabay.com/photo/2015/12/15/09/00/success-1093891_1280.jpg" style="width:30px;height:30px" class="rounded"> 
@@ -67,6 +57,10 @@
               </li>
             </ul>
           </div>
+          <form class="d-flex" role="search" action="/showLineChart/" onsubmit="location.href = this.action + this.symbol.value; return false;">
+            <input class="form-control me-2" name="symbol" type="search" placeholder="Enter Symbol" aria-label="Search">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+          </form>
         </div>
       </nav>
 

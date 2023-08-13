@@ -20,8 +20,10 @@
   {% endfor %}
   </ul>
 </div>
-<a href={{ url_for('optimization_refresh', symbol=symbol) }}><input type="button" value="Refresh Data"></a>
-<div>
+<div>  
+  <a id="refeshButton" class="btn btn-primary bg-primary-emphasis" role="button" href={{ url_for('optimization_refresh', symbol=symbol) }}>Refresh Data</a>
+</div>
+<div class="table-dark table-striped-columns">
   {{ facts_table | safe }}
 </div>
 <div id='chart' class='chart'”>
