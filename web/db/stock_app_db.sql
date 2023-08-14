@@ -65,10 +65,54 @@ ALTER SEQUENCE public.optimum_symbol_parameters_symbol_id_seq OWNED BY public.op
 
 
 --
+-- Name: price_data; Type: TABLE; Schema: public; Owner: stock_app
+--
+
+CREATE TABLE public.price_data (
+    "Date" timestamp with time zone,
+    "Open" double precision,
+    "High" double precision,
+    "Low" double precision,
+    "Close" double precision,
+    "Volume" bigint,
+    "Dividends" double precision,
+    "Stock Splits" double precision,
+    price double precision,
+    single_sma double precision,
+    multi_sma_1 double precision,
+    multi_sma_2 double precision,
+    exp_ma double precision,
+    in_position boolean,
+    symbol_id bigint
+);
+
+
+ALTER TABLE public.price_data OWNER TO stock_app;
+
+--
+-- Name: symbol_info; Type: TABLE; Schema: public; Owner: stock_app
+--
+
+CREATE TABLE public.symbol_info (
+    symbol_id integer,
+    symbol character varying
+);
+
+
+ALTER TABLE public.symbol_info OWNER TO stock_app;
+
+--
 -- Name: optimum_symbol_parameters symbol_id; Type: DEFAULT; Schema: public; Owner: stock_app
 --
 
 ALTER TABLE ONLY public.optimum_symbol_parameters ALTER COLUMN symbol_id SET DEFAULT nextval('public.optimum_symbol_parameters_symbol_id_seq'::regclass);
+
+
+--
+-- Name: ix_price_data_Date; Type: INDEX; Schema: public; Owner: stock_app
+--
+
+CREATE INDEX "ix_price_data_Date" ON public.price_data USING btree ("Date");
 
 
 --
