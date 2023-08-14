@@ -7,6 +7,7 @@ import numpy as np
 
 # Database Stuff
 import sqlite3, psycopg2
+from sqlalchemy import create_engine
 
 # Plotting stuff
 import plotly
@@ -17,7 +18,7 @@ from datetime import datetime
 
 import logging
 
-logging.basicConfig(level=logging.INFO, filename='logs/app.log', filemode='a', format='%(asctime)s: %(name)s - %(levelname)s - %(message)s')
+# logging.basicConfig(level=logging.INFO, filename='logs/app.log', filemode='a', format='%(asctime)s: %(name)s - %(levelname)s - %(message)s')
 
 ##################################
 
@@ -88,6 +89,7 @@ class Optimized_Symbol:
         conn, cur = self.create_db_connection()
         cur.execute(query)
         params = cur.fetchall()
+        self.symbol_id = params[0][0]
         self.last_updated = params[0][2]
         self.calc_period = params[0][3]
         self.single_param_optimum_window = params[0][4]
@@ -180,7 +182,14 @@ class Optimized_Symbol:
         ma_df['exp_ma'] = ma_df.price.ewm(span=exp_ma, adjust=False).mean()
         # if Close > single_sma, in_position = True; else in_position = False
         ma_df['in_position'] = np.where(ma_df['price'] > ma_df['single_sma'], True, False)
+        # write ma_df to db
         return ma_df
+    
+    def write_ma_df_to_db(self):
+        ma_df = add_lag_price(self.history.copy())
+        ma_df['symbol_id'] = self.symbol_id
+        engine = create_engine('postgresql+psycopg2://stock_app:superSecurePassword@localhost:5432/stock_app?')
+        ma_df.to_sql('price_data', engine, if_exists='append')
     
     def plot_custom_ma(self):
         # get single, multi_1, and multi_2 params for symbol from db
