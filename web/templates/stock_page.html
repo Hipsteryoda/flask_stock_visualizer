@@ -2,7 +2,13 @@
 
 {% block content %}
 <h1>Plot Page</h1>
-  
+
+<div id='current_price' class='current_price'>
+    <p>Current Price</p>
+    <p>{{ last_price }}</p>
+</div>
+
+
 <div id='article_titles' class='text'>
   <ul>
   {% for title, url in link_dict.items() %}

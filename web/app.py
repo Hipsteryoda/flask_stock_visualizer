@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, url_for
 from turbo_flask import Turbo
 
-from yfinance import yf
+import yfinance as yf
 
 import pandas as pd
 import json
@@ -183,6 +183,9 @@ def optimization_refresh(symbol):
 
 @app.route("/showLineChart/<symbol>")
 def showLineChart(symbol):
+    # get last price
+    last_price = '${:,.2f}'.format(round(yf.Ticker(symbol).basic_info['lastPrice'], 2))
+    
     # Stock article stuff
     news = analysis.News(symbol)
     titles = news.get_titles()
@@ -205,6 +208,7 @@ def showLineChart(symbol):
     
     return render_template('stock_page.html',
                            title=symbol,
+                           last_price=last_price,
                            graphJSON=graphJSON,
                            symbol=symbol,
                            link_dict=link_dict,
@@ -250,10 +254,5 @@ def top_100_exp_ma():
                                                index=False),
                            title='Top 100 Exponential MA')
     
-    
-@app.context_processor
-def inject_current_price(symbols):
-    for symbol in symbols:
-        lastPrice = yf.Ticker(symbol).basic_info['lastPrice']
-    return lastPrice
+
         
