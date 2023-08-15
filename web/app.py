@@ -1,4 +1,8 @@
 from flask import Flask, render_template, redirect, url_for
+from turbo_flask import Turbo
+
+from yfinance import yf
+
 import pandas as pd
 import json
 import plotly
@@ -17,6 +21,8 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s: %(name)s - %(levelname)s - %(message)s')
 
 app = Flask(__name__)
+#Turbo-flask : https://blog.miguelgrinberg.com/post/dynamically-update-your-flask-web-pages-using-turbo-flask
+turbo = Turbo(app)
 
 ########################################################################
 # Functional stuff
@@ -243,3 +249,11 @@ def top_100_exp_ma():
                                                escape=False,
                                                index=False),
                            title='Top 100 Exponential MA')
+    
+    
+@app.context_processor
+def inject_current_price(symbols):
+    for symbol in symbols:
+        lastPrice = yf.Ticker(symbol).basic_info['lastPrice']
+    return lastPrice
+        
