@@ -282,7 +282,7 @@ class Optimized_Symbol:
                 overall_profit = (pd.Series(profits) + 1).prod()
             if how == 'percentage':
                 overall_profit = (((pd.Series(profits) + 1).prod())-1)*100
-            return overall_profit
+            return round(overall_profit, 3)
 
         def optimize_window(self):
             calcs = {}
@@ -337,7 +337,7 @@ class Optimized_Symbol:
                 overall_profit = (pd.Series(profits) + 1).prod()
             if how == 'percentage':
                 overall_profit = (((pd.Series(profits) + 1).prod())-1)*100
-            return overall_profit
+            return round(overall_profit, 3)
         
         def optimize_window(self):
             # get all combinations of windows
@@ -396,7 +396,7 @@ class Optimized_Symbol:
                 overall_profit = (pd.Series(profits) + 1).prod()
             if how == 'percentage':
                 overall_profit = (((pd.Series(profits) + 1).prod())-1)*100
-            return overall_profit
+            return round(overall_profit, 3)
 
         def optimize(self):
             calcs = {}
