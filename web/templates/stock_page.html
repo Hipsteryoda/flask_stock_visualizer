@@ -4,8 +4,10 @@
 <h1>Plot Page</h1>
 
 <div id='current_price' class='current_price'>
-    <p>Current Price</p>
-    <p>{{ last_price }}</p>
+  <table>
+    <tr><th>Current Price</th><th>Buy/Sell</th></tr>
+    <tr><td>{{ last_price }}</td><td style="color:{{ buy_sell[1] }}">{{ buy_sell[0] }}</td></tr>
+  </table>
 </div>
 
 

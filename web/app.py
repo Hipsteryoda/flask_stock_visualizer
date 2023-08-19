@@ -123,6 +123,11 @@ def read_top_100_exp_ma():
     close_psql_db_connection(conn, cur)
     return table
     
+def indcate_buy_sell(current_price, sma_price):
+    if current_price > sma_price:
+        return ('Buy', 'green')
+    elif current_price <= sma_price:
+        return ('Sell', 'red')
 
 ######################################################################### 
 
@@ -183,8 +188,19 @@ def optimization_refresh(symbol):
 
 @app.route("/showLineChart/<symbol>")
 def showLineChart(symbol):
+    # instantiate Optimized_Symbol
+    opt = Optimized_Symbol(symbol)
+
     # get last price
-    last_price = '${:,.2f}'.format(round(yf.Ticker(symbol).basic_info['lastPrice'], 2))
+    last_price = yf.Ticker(symbol).basic_info['lastPrice']
+    str_last_price = '${:,.2f}'.format(round(last_price), 2)
+        
+    # get buy_sell indication
+    current_exp_ma_price = opt.two_ma_calc(opt.single_param_optimum_window, 
+                                        opt.multi_param_optimum_window_1, 
+                                        opt.multi_param_optimum_window_2, 
+                                        opt.exp_ma_optimum_window)['exp_ma'].iloc[-1]
+    buy_sell = indcate_buy_sell(float(last_price), current_exp_ma_price)
     
     # Stock article stuff
     news = analysis.News(symbol)
@@ -193,9 +209,6 @@ def showLineChart(symbol):
     link_dict = {}
     for idx, val in enumerate(titles):
         link_dict[titles[idx]] = [urls[idx], analysis.Article(urls[idx]).polarity_scores()]
-    
-    # instantiate Optimized_Symbol
-    opt = Optimized_Symbol(symbol)
     
     # TODO: update Optimized_Symbol to check db first before calculating attributes
     facts_table = read_optimization_params(symbol)
@@ -208,14 +221,15 @@ def showLineChart(symbol):
     
     return render_template('stock_page.html',
                            title=symbol,
-                           last_price=last_price,
+                           last_price=str_last_price,
                            graphJSON=graphJSON,
                            symbol=symbol,
                            link_dict=link_dict,
                            refresh_opts=redirect('/optimization_refresh/' + symbol),
                            facts_table=facts_table.to_html(
                                index=False
-                           ))
+                           ),
+                           buy_sell=buy_sell)
     
 @app.route('/data')
 def data():
