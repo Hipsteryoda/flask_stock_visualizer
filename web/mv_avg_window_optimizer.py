@@ -181,7 +181,9 @@ class Optimized_Symbol:
         ma_df['multi_sma_2'] = ma_df.price.rolling(multi_sma_2).mean()
         ma_df['exp_ma'] = ma_df.price.ewm(span=exp_ma, adjust=False).mean()
         # if Close > single_sma, in_position = True; else in_position = False
-        ma_df['in_position'] = np.where(ma_df['price'] > ma_df['single_sma'], True, False)
+        ma_df['single_sma_in_position'] = np.where(ma_df['price'] > ma_df['single_sma'], True, False)
+        ma_df['multi_sma_in_position'] = np.where(ma_df['multi_sma_1'] > ma_df['multi_sma_2'], True, False)
+        ma_df['exp_sma_in_position'] = np.where(ma_df['price'] > ma_df['exp_ma'], True, False)
         # write ma_df to db
         return ma_df
     
@@ -232,6 +234,18 @@ class Optimized_Symbol:
         fig.add_trace(
             go.Scatter(x=x_axis, y=ma_df['exp_ma'],
                        name=f'{exp_ma_optimum_window} Day Exp. Moving Average (exp_ma)')
+        )
+        fig.add_trace(
+            go.Scatter(x=x_axis, y=ma_df['Close'], mode='markers', marker_color=ma_df['single_sma_in_position'].astype(int),
+                       name='Single SMA Buy/Sell')
+        )
+        fig.add_trace(
+            go.Scatter(x=x_axis, y=ma_df['Close'], mode='markers', marker_color=ma_df['multi_sma_in_position'].astype(int),
+                       name='Multi SMA Buy/Sell')
+        )
+        fig.add_trace(
+            go.Scatter(x=x_axis, y=ma_df['Close'], mode='markers', marker_color=ma_df['exp_sma_in_position'].astype(int),
+                       name='Exp. MA Buy/Sell')
         )
         # fig.show()
         
