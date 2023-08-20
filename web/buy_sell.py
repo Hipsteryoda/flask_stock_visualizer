@@ -52,12 +52,12 @@ def calc_ma_price(how, symbol) -> pd.DataFrame:
         optimum_window = get_symbol_optimum_window(how, symbol)
         if how == 'single_param_optimum_multiple':
             ma_df['single_sma'] = ma_df.price.rolling(optimum_window).mean()
-            ma_df['in_position'] = np.where(ma_df['price'] > ma_df['single_sma'], True, False)
+            ma_df['in_position'] = np.where(ma_df['Close'] > ma_df['single_sma'], True, False)
         elif how == 'exp_ma_optimum_multiple':
             ma_df['exp_ma'] = ma_df.price.ewm(span=optimum_window, adjust=False).mean()
-            ma_df['in_position'] = np.where(ma_df['price'] > ma_df['exp_ma'], True, False)
+            ma_df['in_position'] = np.where(ma_df['Close'] > ma_df['exp_ma'], True, False)
         return ma_df['in_position'].iloc[-1]
-    except psycopg2.ProgrammingError as e:
+    except Exception as e:
         print(e)
 
 def update_positions(symbol, in_position):
