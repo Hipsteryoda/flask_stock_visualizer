@@ -203,12 +203,15 @@ def showLineChart(symbol):
     buy_sell = indcate_buy_sell(float(last_price), current_exp_ma_price)
     
     # Stock article stuff
-    news = analysis.News(symbol)
-    titles = news.get_titles()
-    urls = news.get_urls()
-    link_dict = {}
-    for idx, val in enumerate(titles):
-        link_dict[titles[idx]] = [urls[idx], analysis.Article(urls[idx]).polarity_scores()]
+    try:
+        news = analysis.News(symbol)
+        titles = news.get_titles()
+        urls = news.get_urls()
+        link_dict = {}
+        for idx, val in enumerate(titles):
+            link_dict[titles[idx]] = [urls[idx], analysis.Article(urls[idx]).polarity_scores()]
+    except Exception as e:
+        link_dict = {e:'Failed'}
     
     # TODO: update Optimized_Symbol to check db first before calculating attributes
     facts_table = read_optimization_params(symbol)
