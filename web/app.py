@@ -193,7 +193,7 @@ def showLineChart(symbol):
 
     # get last price
     last_price = yf.Ticker(symbol).basic_info['lastPrice']
-    str_last_price = '${:,.2f}'.format(round(last_price), 2)
+    str_last_price = '${:,.2f}'.format(round(last_price, 2))
         
     # get buy_sell indication
     current_exp_ma_price = opt.two_ma_calc(opt.single_param_optimum_window, 
