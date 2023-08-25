@@ -1,5 +1,5 @@
 from flask import Flask, render_template, redirect, url_for
-from turbo_flask import Turbo
+#from turbo_flask import Turbo
 
 import yfinance as yf
 
@@ -22,7 +22,7 @@ logging.basicConfig(level=logging.INFO,
 
 app = Flask(__name__)
 #Turbo-flask : https://blog.miguelgrinberg.com/post/dynamically-update-your-flask-web-pages-using-turbo-flask
-turbo = Turbo(app)
+# turbo = Turbo(app)
 
 ########################################################################
 # Functional stuff
@@ -272,4 +272,5 @@ def top_100_exp_ma():
                            title='Top 100 Exponential MA')
     
 
-        
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0')
