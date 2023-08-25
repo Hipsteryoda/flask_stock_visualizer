@@ -55,7 +55,7 @@ class Optimized_Symbol:
         self.read_from_db()
 
     def create_db_connection(self):
-        conn = psycopg2.connect("dbname=stock_app user=stock_app")
+        conn = psycopg2.connect("dbname=stock_app user=stock_app password=stock_app_pi")
         cur = conn.cursor()
         logging.debug("Created connection and cursor for: dbname=stock_app user=stock_app")
         return conn, cur
@@ -112,8 +112,7 @@ class Optimized_Symbol:
         """
         
         period = self.calc_period
-        conn = psycopg2.connect("dbname=stock_app user=stock_app")
-        cur = conn.cursor()
+        conn, cur = self.create_db_connection()
         
         insert_query = f'''
         INSERT INTO optimum_symbol_parameters
@@ -160,8 +159,7 @@ class Optimized_Symbol:
         conn.commit()
 
         # close connection
-        cur.close()
-        conn.close()
+        self.close_db_connection(conn, cur)
             
     def refresh_data(self):
         """

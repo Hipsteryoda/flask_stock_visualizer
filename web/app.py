@@ -32,7 +32,7 @@ def get_db_connection():
     return conn
 
 def create_psql_db_connection():
-    conn = psycopg2.connect("dbname=stock_app user=stock_app")
+    conn = psycopg2.connect("dbname=stock_app user=stock_app password=stock_app_pi")
     cur = conn.cursor()
     return conn, cur
 
@@ -164,7 +164,7 @@ def home():
                            title="Stock App"
                            )
 
-@app.route('/rebuild')
+@app.route('/git')
 def rebuild():
     stockdata = analysis.StockData()
     bol_df = stockdata.bol_df
