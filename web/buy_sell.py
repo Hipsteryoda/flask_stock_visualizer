@@ -10,7 +10,7 @@ import psycopg2
 from tqdm import tqdm
 
 def create_db_connection():
-    conn = psycopg2.connect("dbname=stock_app user=stock_app")
+    conn = psycopg2.connect("dbname=stock_app user=stock_app password=stock_app_pi")
     cur = conn.cursor()
     return conn, cur
 
