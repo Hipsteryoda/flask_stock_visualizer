@@ -66,7 +66,7 @@ def update_positions(symbol, position):
     if position != None:
         conn, cur = create_db_connection()
         query = f"""INSERT INTO positions (position, symbol, date)
-        VALUES  ({position}, '{symbol}', {date.today()});
+        VALUES  ('{position}', '{symbol}', '{date.today()}');
         """
         cur.execute(query)
         conn.commit()

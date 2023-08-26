@@ -12,6 +12,7 @@ import sqlite3, psycopg2
 import os
 from datetime import datetime, date, time
 from mv_avg_window_optimizer import Optimized_Symbol
+from config import HOME_DIR
 
 # import logging
 
@@ -27,7 +28,7 @@ app = Flask(__name__)
 ########################################################################
 # Functional stuff
 def get_db_connection():
-    conn = sqlite3.connect('$HOME/flask_stock_visualizer/web/db')
+    conn = sqlite3.connect(f'{HOME_DIR}/flask_stock_visualizer/web/db/database.db')
     conn.row_factory = sqlite3.Row
     return conn
 
