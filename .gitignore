@@ -9,3 +9,4 @@ docs/
 db/
 *.sql
 web/logs/
+web/config.py
