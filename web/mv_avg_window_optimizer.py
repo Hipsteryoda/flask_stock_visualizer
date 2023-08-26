@@ -168,7 +168,7 @@ class Optimized_Symbol:
         # calculate information
         self.history = yf.Ticker(self.symbol).history()
         self.single_param_opt = self.Single_Parameter_Optimizer(self.history)
-        self.multi_param_opt = self.Multiple_Parameter_Optimizer(self.history)
+        # self.multi_param_opt = self.Multiple_Parameter_Optimizer(self.history)
         ## Uncomment to automatically write to database
         # self.write_to_db()
     
@@ -312,12 +312,12 @@ class Optimized_Symbol:
             
     class Multiple_Parameter_Optimizer:
         def __init__(self, df):
-            self.df = add_lag_price(df)
-            self.opts = self.optimize_window()
-            self.optimum_window_1 = self.opts[0][0]
-            self.optimum_window_2 = self.opts[0][1]
-            self.optimum_multiple = self.opts[1]
-            self.organic_growth = (df.Close.pct_change()+1).prod()
+            # self.df = add_lag_price(df)
+            # self.opts = self.optimize_window()
+            self.optimum_window_1 = 0
+            self.optimum_window_2 = 0
+            self.optimum_multiple = 0.0
+            # self.organic_growth = (df.Close.pct_change()+1).prod()
 
         def two_ma_calc(self, n, m):
             self.df['sma_1'] = self.df.Close.rolling(n).mean()
