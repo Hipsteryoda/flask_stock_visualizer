@@ -9,6 +9,8 @@ import psycopg2
 
 from tqdm import tqdm
 
+from datetime import date
+
 def create_db_connection():
     conn = psycopg2.connect("dbname=stock_app user=stock_app password=stock_app_pi")
     cur = conn.cursor()
@@ -52,20 +54,19 @@ def calc_ma_price(how, symbol) -> pd.DataFrame:
         optimum_window = get_symbol_optimum_window(how, symbol)
         if how == 'single_param_optimum_multiple':
             ma_df['single_sma'] = ma_df.price.rolling(optimum_window).mean()
-            ma_df['in_position'] = np.where(ma_df['Close'] > ma_df['single_sma'], True, False)
+            ma_df['position'] = np.where(ma_df['Close'] > ma_df['single_sma'], 'buy', 'sell')
         elif how == 'exp_ma_optimum_multiple':
             ma_df['exp_ma'] = ma_df.price.ewm(span=optimum_window, adjust=False).mean()
-            ma_df['in_position'] = np.where(ma_df['Close'] > ma_df['exp_ma'], True, False)
-        return ma_df['in_position'].iloc[-1]
+            ma_df['position'] = np.where(ma_df['Close'] > ma_df['exp_ma'], 'buy', 'sell')
+        return ma_df['position'].iloc[-1]
     except Exception as e:
         print(e)
 
-def update_positions(symbol, in_position):
-    if in_position != None:
+def update_positions(symbol, position):
+    if position != None:
         conn, cur = create_db_connection()
-        query = f"""UPDATE positions
-        SET in_position = {in_position}
-        WHERE symbol = '{symbol}';
+        query = f"""INSERT INTO positions (position, symbol, date)
+        VALUES  ({position}, '{symbol}', {date.today()});
         """
         cur.execute(query)
         conn.commit()
@@ -86,9 +87,9 @@ for symbol in tqdm(symbol_list):
     opt_param = get_symbol_optimum_multiple(symbol)
 
     # calculate the optimum ma price for today
-    in_position = calc_ma_price(opt_param, symbol)
+    position = calc_ma_price(opt_param, symbol)
 
-    update_positions(symbol, in_position)
+    update_positions(symbol, position)
 
 
 

@@ -13,12 +13,12 @@ import os
 from datetime import datetime, date, time
 from mv_avg_window_optimizer import Optimized_Symbol
 
-import logging
+# import logging
 
-logging.basicConfig(level=logging.INFO, 
-                    filename='logs/app.log', 
-                    filemode='a', 
-                    format='%(asctime)s: %(name)s - %(levelname)s - %(message)s')
+# logging.basicConfig(level=logging.INFO, 
+#                     filename='logs/app.log', 
+#                     filemode='a', 
+#                     format='%(asctime)s: %(name)s - %(levelname)s - %(message)s')
 
 app = Flask(__name__)
 #Turbo-flask : https://blog.miguelgrinberg.com/post/dynamically-update-your-flask-web-pages-using-turbo-flask
@@ -133,7 +133,7 @@ def indcate_buy_sell(current_price, sma_price):
 
 @app.route("/")
 def root():
-    logging.debug('Redirecting from root (/) to home (/home)')
+    # logging.debug('Redirecting from root (/) to home (/home)')
     return redirect(url_for("home"))
 
 @app.route("/index")
