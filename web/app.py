@@ -27,7 +27,7 @@ app = Flask(__name__)
 ########################################################################
 # Functional stuff
 def get_db_connection():
-    conn = sqlite3.connect('db/database.db')
+    conn = sqlite3.connect('$HOME/flask_stock_visualizer/web/db')
     conn.row_factory = sqlite3.Row
     return conn
 
