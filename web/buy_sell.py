@@ -49,16 +49,18 @@ def get_symbol_optimum_window(opt_mult, symbol):
 
 def calc_ma_price(how, symbol) -> pd.DataFrame:
     try:
-        history = yf.Ticker(f'{symbol}').history(period='12mo')
+        ticker = yf.Ticker(f'{symbol}')
+        history = ticker.history(period='12mo')
+        # current_price = yf.Ticker(symbol).basic_info['lastPrice']
         ma_df = add_lag_price(history)
         optimum_window = get_symbol_optimum_window(how, symbol)
         if how == 'single_param_optimum_multiple':
             ma_df['single_sma'] = ma_df.price.rolling(optimum_window).mean()
-            ma_df['position'] = np.where(ma_df['Close'] > ma_df['single_sma'], 'buy', 'sell')
+            ma_df['position'] = np.where(ma_df['price'] > ma_df['single_sma'], 'buy', 'sell')
         elif how == 'exp_ma_optimum_multiple':
             ma_df['exp_ma'] = ma_df.price.ewm(span=optimum_window, adjust=False).mean()
-            ma_df['position'] = np.where(ma_df['Close'] > ma_df['exp_ma'], 'buy', 'sell')
-        return ma_df['position'].iloc[-1], ma_df['price'].iloc[-1]
+            ma_df['position'] = np.where(ma_df['price'] > ma_df['exp_ma'], 'buy', 'sell')
+        return [ma_df['position'].iloc[-1], ma_df['Close'].iloc[-1]]
     except Exception as e:
         print(e)
 
