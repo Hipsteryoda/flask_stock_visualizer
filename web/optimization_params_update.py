@@ -7,5 +7,5 @@ stocks = pd.read_csv('/home/ksmith/flask_stock_visualizer/web/nasdaq_screener_16
 
 stock_list = stocks.Symbol.to_list()
 
-for symbol in tqdm(stock_list):
+for symbol in stock_list:
     Optimized_Symbol(symbol)

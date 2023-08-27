@@ -58,15 +58,15 @@ def calc_ma_price(how, symbol) -> pd.DataFrame:
         elif how == 'exp_ma_optimum_multiple':
             ma_df['exp_ma'] = ma_df.price.ewm(span=optimum_window, adjust=False).mean()
             ma_df['position'] = np.where(ma_df['Close'] > ma_df['exp_ma'], 'buy', 'sell')
-        return ma_df['position'].iloc[-1]
+        return ma_df['position'].iloc[-1], ma_df['price'].iloc[-1]
     except Exception as e:
         print(e)
 
 def update_positions(symbol, position):
     if position != None:
         conn, cur = create_db_connection()
-        query = f"""INSERT INTO positions (position, symbol, date)
-        VALUES  ('{position}', '{symbol}', '{date.today()}');
+        query = f"""INSERT INTO positions (position, symbol, date, at_price)
+        VALUES  ('{position[0]}', '{symbol}', '{date.today()}', '{position[1]}');
         """
         cur.execute(query)
         conn.commit()
