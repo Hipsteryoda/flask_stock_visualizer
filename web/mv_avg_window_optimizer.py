@@ -217,32 +217,36 @@ class Optimized_Symbol:
                         name='Close Price'),
             layout={'title':f'{self.symbol}'}
             )
+        fig = go.Figure(
+            go.Scatter(x=x_axis, y=ma_df['price'], 
+                        name='Open Price')
+            )
         fig.add_trace(
             go.Scatter(x=x_axis, y=ma_df['single_sma'], 
                         name=f'{single_param_optimum_window} Day Moving Average (single)')
             )
-        fig.add_trace(
-            go.Scatter(x=x_axis, y=ma_df['multi_sma_1'], 
-                        name=f'{multi_param_optimum_window_1} Day Moving Average (multi_1)')
-        )
-        fig.add_trace(
-            go.Scatter(x=x_axis, y=ma_df['multi_sma_2'], 
-                        name=f'{multi_param_optimum_window_2} Day Moving Average (multi_2)')
-        )
+        # fig.add_trace(
+        #     go.Scatter(x=x_axis, y=ma_df['multi_sma_1'], 
+        #                 name=f'{multi_param_optimum_window_1} Day Moving Average (multi_1)')
+        # )
+        # fig.add_trace(
+        #     go.Scatter(x=x_axis, y=ma_df['multi_sma_2'], 
+        #                 name=f'{multi_param_optimum_window_2} Day Moving Average (multi_2)')
+        # )
         fig.add_trace(
             go.Scatter(x=x_axis, y=ma_df['exp_ma'],
                        name=f'{exp_ma_optimum_window} Day Exp. Moving Average (exp_ma)')
         )
         fig.add_trace(
-            go.Scatter(x=x_axis, y=ma_df['Close'], mode='markers', marker_color=ma_df['single_sma_in_position'].astype(int),
+            go.Scatter(x=x_axis, y=ma_df['price'], mode='markers', marker_color=ma_df['single_sma_in_position'].astype(int),
                        name='Single SMA Buy/Sell')
         )
+        # fig.add_trace(
+        #     go.Scatter(x=x_axis, y=ma_df['price'], mode='markers', marker_color=ma_df['multi_sma_in_position'].astype(int),
+        #                name='Multi SMA Buy/Sell')
+        # )
         fig.add_trace(
-            go.Scatter(x=x_axis, y=ma_df['Close'], mode='markers', marker_color=ma_df['multi_sma_in_position'].astype(int),
-                       name='Multi SMA Buy/Sell')
-        )
-        fig.add_trace(
-            go.Scatter(x=x_axis, y=ma_df['Close'], mode='markers', marker_color=ma_df['exp_sma_in_position'].astype(int),
+            go.Scatter(x=x_axis, y=ma_df['price'], mode='markers', marker_color=ma_df['exp_sma_in_position'].astype(int),
                        name='Exp. MA Buy/Sell')
         )
         # fig.show()
