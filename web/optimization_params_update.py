@@ -7,13 +7,21 @@ stocks = pd.read_csv('/home/ksmith/flask_stock_visualizer/web/nasdaq_screener_16
 
 stock_list = stocks.Symbol.to_list()
 
-start_idx = int(sys.argv[1])
+for symbol in stock_list:
+    Optimized_Symbol(symbol)
 
-if start_idx != None:
-    for symbol in tqdm(stock_list[start_idx:]):
-        Optimized_Symbol(symbol)
+# try:
+#     start_idx = int(sys.argv[1])
+# except:
+#     pass
+
+# if start_idx != None:
+#     # for symbol in tqdm(stock_list[start_idx:]):
+#     for symbol in stock_list[start_idx:]:
+#         Optimized_Symbol(symbol)
             
-else:
-    for symbol in tqdm(stock_list):
-        Optimized_Symbol(symbol)
+# else:
+#     # for symbol in tqdm(stock_list):
+#     for symbol in stock_list:
+#         Optimized_Symbol(symbol)
             
