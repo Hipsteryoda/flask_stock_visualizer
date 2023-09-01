@@ -64,7 +64,7 @@ def calc_ma_price(how, symbol) -> pd.DataFrame:
             
         # check if position today has changed from the previous day
         changed_from_yesterday = True if ma_df['position'].iloc[-1] != ma_df['position'].iloc[-2] else False
-        return [ma_df['position'].iloc[-1], ma_df['Close'].iloc[-1], changed_from_yesterday]
+        return [ma_df['position'].iloc[-2], ma_df['price'].iloc[-2], changed_from_yesterday]
     except Exception as e:
         print(e)
 
@@ -88,7 +88,8 @@ symbol_list = [val[0] for idx, val in enumerate(cur.fetchall())]
 close_db_connection(conn, cur)
 
 # for a given stock
-for symbol in tqdm(symbol_list):
+#for symbol in tqdm(symbol_list):
+for symbol in symbol_list:
     # find the historical best moving average performance and it's value
     opt_param = get_symbol_optimum_multiple(symbol)
 
