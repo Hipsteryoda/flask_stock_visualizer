@@ -14,11 +14,14 @@ try:
     start_idx = int(sys.argv[1])
 except:
     start_idx = None
+    
+# print(start_idx)
 
 if start_idx != None:
-    # for symbol in tqdm(stock_list[start_idx:]):
-    for symbol in stock_list[start_idx:]:
+    for symbol in tqdm(stock_list[start_idx:]):
+    # for symbol in stock_list[start_idx:]:
         Optimized_Symbol(symbol)
+        # print(type(symbol))
             
 else:
     for symbol in tqdm(stock_list):
