@@ -165,7 +165,7 @@ def home():
                            title="Stock App"
                            )
 
-@app.route('/git')
+@app.route('/refresh_data')
 def rebuild():
     stockdata = analysis.StockData()
     bol_df = stockdata.bol_df
@@ -271,7 +271,19 @@ def top_100_exp_ma():
                                                escape=False,
                                                index=False),
                            title='Top 100 Exponential MA')
+
+@app.route('/scrollable')
+def scrollable():
+    table = read_top_100_exp_ma()
+    table.set_index('symbol_id', inplace=True)
+    link_frmt = lambda x: f'<a href="showLineChart/{x}">{x}</a>'
+    return render_template('scrollable.html',
+                           table=table.to_html(formatters={'symbol':link_frmt},
+                                               escape=False,
+                                               index=False)
+                           )
     
+
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
